@@ -14,9 +14,7 @@ import { VarietySection } from "@/components/featured/VarietySection";
 
 export default function Home() {
   const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    smooth: true,
-  });
+  const { scrollYProgress } = useScroll();
 
   // Sky gradient transition: Day -> Sunset -> Night
   const background = useTransform(
