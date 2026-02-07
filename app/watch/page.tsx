@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Tv, Music, BookOpen, Clapperboard } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
 
 const content = [
     {
@@ -43,6 +44,7 @@ const content = [
 export default function WatchPage() {
     return (
         <main className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-pink-900" dir="rtl">
+            <Navbar />
             {/* Hero Section */}
             <section className="relative py-20 px-4 overflow-hidden">
                 <div className="absolute inset-0 opacity-10">

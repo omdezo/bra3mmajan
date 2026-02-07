@@ -50,13 +50,21 @@ export function VarietySection() {
     };
 
     return (
-        <section ref={containerRef} className="relative min-h-[120vh] bg-gradient-to-b from-sky-300 via-amber-100 to-amber-200 overflow-hidden flex items-center justify-center p-4">
+        <section ref={containerRef} className="relative min-h-screen bg-gradient-to-b from-sky-300 via-amber-100 to-amber-200 overflow-hidden flex items-center justify-center p-4">
 
             {/* Parallax Background Layers */}
             <motion.div style={{ y: yBackground }} className="absolute inset-0 z-0">
-                {/* Distant Dunes - using CSS gradient/pattern for now if image missing */}
-                <div className="absolute bottom-0 w-full h-[60%] bg-[url('/assets/omani_landscape.png')] bg-cover bg-bottom opacity-40 mix-blend-multiply" />
-                <div className="absolute inset-0 bg-gradient-to-t from-amber-200 via-transparent to-transparent" />
+                {/* Distant Dunes - Faded into sky */}
+                <div
+                    className="absolute bottom-0 w-full h-full bg-[url('/assets/omani_landscape.png')] bg-cover bg-bottom opacity-60 mix-blend-overlay"
+                    style={{
+                        maskImage: 'linear-gradient(to top, black 30%, transparent 80%)',
+                        WebkitMaskImage: 'linear-gradient(to top, black 30%, transparent 80%)'
+                    }}
+                />
+
+                {/* Color blending overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-200/50 via-transparent to-transparent" />
             </motion.div>
 
             {/* Maha (The Oryx) - Guide */}
@@ -103,13 +111,13 @@ export function VarietySection() {
             </div>
 
             {/* The Main Stage */}
-            <div className="relative z-20 w-full max-w-6xl flex flex-col items-center justify-center h-full">
+            <div className="relative z-20 w-full max-w-6xl flex flex-col items-center justify-center h-full gap-12 py-20">
 
                 {/* Title Card */}
                 <motion.div
                     initial={{ y: -50, opacity: 0 }}
                     whileInView={{ y: 0, opacity: 1 }}
-                    className="absolute top-10 md:top-20 text-center z-40 bg-white/80 backdrop-blur-md px-8 py-4 rounded-full border-4 border-amber-400 shadow-[0_10px_30px_rgba(245,158,11,0.3)]"
+                    className="relative text-center z-40 bg-white/80 backdrop-blur-md px-10 py-6 rounded-full border-4 border-amber-400 shadow-[0_10px_30px_rgba(245,158,11,0.3)]"
                 >
                     <h2 className="text-3xl md:text-5xl font-black text-amber-800 drop-shadow-sm">
                         كنوز التراث العُماني
@@ -121,7 +129,7 @@ export function VarietySection() {
 
                 {/* The Magic Chest */}
                 <motion.div
-                    className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px] cursor-pointer mt-20"
+                    className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px] cursor-pointer"
                     onClick={() => !isChestOpen && setIsChestOpen(true)}
                     whileHover={{ scale: isChestOpen ? 1 : 1.02 }}
                     animate={{

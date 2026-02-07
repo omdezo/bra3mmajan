@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Trophy, Target, Users, BookCheck } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
 
 const challengeTypes = [
     {
@@ -43,6 +44,7 @@ const challengeTypes = [
 export default function ChallengesPage() {
     return (
         <main className="min-h-screen bg-gradient-to-b from-sky-400 via-sky-300 to-amber-100" dir="rtl">
+            <Navbar />
             {/* Hero Section */}
             <section className="relative py-20 px-4 overflow-hidden">
                 <div className="absolute inset-0">

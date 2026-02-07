@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Calculator, Languages, Puzzle, Brain, Trophy, Star, Zap, Heart, Sparkles, ArrowRight } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
 
 const games = [
     {
@@ -74,6 +75,7 @@ export default function GamesPage() {
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-pink-400 via-purple-400 to-blue-500 relative overflow-hidden" dir="rtl">
+            <Navbar />
 
             {/* Animated Background Elements */}
             <div className="absolute inset-0 overflow-hidden">

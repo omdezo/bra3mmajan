@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Palette, Castle, Music, GraduationCap } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
 
 const varietyContent = [
     {
@@ -43,6 +44,7 @@ const varietyContent = [
 export default function VarietyPage() {
     return (
         <main className="min-h-screen bg-gradient-to-b from-amber-100 via-amber-50 to-yellow-50" dir="rtl">
+            <Navbar />
             {/* Hero Section */}
             <section className="relative py-20 px-4 overflow-hidden">
                 <div className="absolute inset-0 opacity-20">

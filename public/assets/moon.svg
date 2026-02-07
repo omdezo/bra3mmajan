@@ -1,0 +1,17 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="moonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="coloredBlur" />
+      <feMerge>
+        <feMergeNode in="coloredBlur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#moonGlow)">
+    <path d="M100,20 A80,80 0 1,1 100,180 A60,60 0 1,0 100,20 Z" fill="#FFD700" />
+    <!-- Star hanging -->
+    <line x1="140" y1="50" x2="140" y2="80" stroke="#FFF" stroke-width="2" opacity="0.5" />
+    <polygon points="140,80 145,95 160,95 148,105 152,120 140,110 128,120 132,105 120,95 135,95" fill="#FFF" />
+  </g>
+</svg>

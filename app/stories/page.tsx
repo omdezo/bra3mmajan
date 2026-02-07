@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, Heart, Lightbulb, Globe } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
 
 const storyCategories = [
     {
@@ -43,6 +44,7 @@ const storyCategories = [
 export default function StoriesPage() {
     return (
         <main className="min-h-screen bg-gradient-to-b from-indigo-950 via-purple-900 to-indigo-900" dir="rtl">
+            <Navbar />
             {/* Hero Section */}
             <section className="relative py-20 px-4 overflow-hidden">
                 <div className="absolute inset-0">

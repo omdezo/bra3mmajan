@@ -1,0 +1,51 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="petalGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#FF1493" />
+      <stop offset="60%" stop-color="#DA70D6" />
+      <stop offset="100%" stop-color="#800080" />
+    </radialGradient>
+    <radialGradient id="centerGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD700" />
+      <stop offset="100%" stop-color="#FFA500" />
+    </radialGradient>
+    <filter id="bloomGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+      <feMerge>
+        <feMergeNode in="coloredBlur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Stem -->
+  <path d="M100,200 Q105,150 100,110" stroke="#228B22" stroke-width="8" fill="none" />
+
+  <!-- The Flower Head Group -->
+  <g transform="translate(100, 80)" filter="url(#bloomGlow)">
+    <!-- Back Petals -->
+    <g transform="rotate(22.5)">
+       <ellipse cx="0" cy="-40" rx="20" ry="40" fill="url(#petalGradient)" className="petal" />
+       <ellipse cx="28" cy="-28" rx="20" ry="40" fill="url(#petalGradient)" transform="rotate(45)" />
+       <ellipse cx="40" cy="0" rx="20" ry="40" fill="url(#petalGradient)" transform="rotate(90)" />
+       <ellipse cx="28" cy="28" rx="20" ry="40" fill="url(#petalGradient)" transform="rotate(135)" />
+       <ellipse cx="0" cy="40" rx="20" ry="40" fill="url(#petalGradient)" transform="rotate(180)" />
+       <ellipse cx="-28" cy="28" rx="20" ry="40" fill="url(#petalGradient)" transform="rotate(225)" />
+       <ellipse cx="-40" cy="0" rx="20" ry="40" fill="url(#petalGradient)" transform="rotate(270)" />
+       <ellipse cx="-28" cy="-28" rx="20" ry="40" fill="url(#petalGradient)" transform="rotate(315)" />
+    </g>
+    <!-- Front Petals (Rotated) -->
+    <g>
+       <ellipse cx="0" cy="-35" rx="15" ry="35" fill="#FF69B4" opacity="0.9" />
+       <ellipse cx="35" cy="0" rx="15" ry="35" fill="#FF69B4" opacity="0.9" transform="rotate(90)" />
+       <ellipse cx="0" cy="35" rx="15" ry="35" fill="#FF69B4" opacity="0.9" transform="rotate(180)" />
+       <ellipse cx="-35" cy="0" rx="15" ry="35" fill="#FF69B4" opacity="0.9" transform="rotate(270)" />
+    </g>
+    
+    <!-- Center -->
+    <circle cx="0" cy="0" r="15" fill="url(#centerGradient)" />
+    <!-- Sparkles/Stamen details -->
+    <circle cx="-5" cy="-5" r="2" fill="#FFF" opacity="0.6" />
+    <circle cx="5" cy="5" r="2" fill="#FFF" opacity="0.6" />
+  </g>
+</svg>

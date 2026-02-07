@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Book, Heart, Sun, Moon } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
 
 const islamicContent = [
     {
@@ -43,6 +44,7 @@ const islamicContent = [
 export default function OasisPage() {
     return (
         <main className="min-h-screen bg-gradient-to-b from-teal-900 via-emerald-800 to-green-700" dir="rtl">
+            <Navbar />
             {/* Hero Section */}
             <section className="relative py-20 px-4 overflow-hidden">
                 <div className="absolute inset-0">
