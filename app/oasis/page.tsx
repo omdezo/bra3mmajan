@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Book, Heart, Sun, Moon } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { VisitorCounter } from "@/components/VisitorCounter";
 
 const islamicContent = [
     {
@@ -175,6 +176,13 @@ export default function OasisPage() {
                             <strong>نور</strong> طفلة عُمانية ترتدي الحجاب بألوان زاهية، هادئة ومحبوبة، تعلّم الأطفال القيم الإسلامية بلطف ومحبة!
                         </p>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Visitor Counter */}
+            <section className="py-8 px-4 bg-gradient-to-b from-teal-900/50 to-green-900/50">
+                <div className="max-w-6xl mx-auto flex justify-center">
+                    <VisitorCounter pageName="oasis" />
                 </div>
             </section>
 

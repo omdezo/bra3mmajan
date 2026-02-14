@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Calculator, Languages, Puzzle, Brain, Trophy, Star, Zap, Heart, Sparkles, ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { VisitorCounter } from "@/components/VisitorCounter";
 
 const games = [
     {
@@ -448,6 +449,13 @@ export default function GamesPage() {
                             </p>
                         </div>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Visitor Counter */}
+            <section className="py-8 px-4 bg-gradient-to-b from-orange-100 to-amber-100">
+                <div className="max-w-6xl mx-auto flex justify-center">
+                    <VisitorCounter pageName="games" />
                 </div>
             </section>
 

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Video, Calendar, Users, MonitorPlay } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { VisitorCounter } from "@/components/VisitorCounter";
 
 const virtualClasses = [
     {
@@ -338,6 +339,13 @@ export default function ClassesPage() {
                             💡 تأكد من تحميل تطبيق Microsoft Teams على جهازك
                         </p>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Visitor Counter */}
+            <section className="py-8 px-4 bg-gradient-to-b from-cyan-50 to-blue-100">
+                <div className="max-w-6xl mx-auto flex justify-center">
+                    <VisitorCounter pageName="classes" />
                 </div>
             </section>
         </main>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Tv, Music, BookOpen, Clapperboard } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { VisitorCounter } from "@/components/VisitorCounter";
 
 const content = [
     {
@@ -163,6 +164,13 @@ export default function WatchPage() {
                             <strong>فرح</strong> فراشة جميلة ترتدي ثوباً عُمانياً ملوناً، تحب الفن والإبداع وتقدم المحتوى بأسلوب شيّق ومميز!
                         </p>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Visitor Counter */}
+            <section className="py-8 px-4 bg-gradient-to-b from-purple-900/50 to-pink-900/50">
+                <div className="max-w-6xl mx-auto flex justify-center">
+                    <VisitorCounter pageName="watch" />
                 </div>
             </section>
 

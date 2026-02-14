@@ -11,6 +11,7 @@ import { StoriesSection } from "@/components/featured/StoriesSection";
 import { ChallengesSection } from "@/components/featured/ChallengesSection";
 import { OasisSection } from "@/components/featured/OasisSection";
 import { VarietySection } from "@/components/featured/VarietySection";
+import { VisitorCounter } from "@/components/VisitorCounter";
 
 export default function Home() {
   const containerRef = useRef(null);
@@ -102,6 +103,9 @@ export default function Home() {
 
       <footer className="w-full bg-[#FFB580] py-16 text-center relative z-20 border-t-4 border-purple-500" dir="rtl">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+          <div className="flex justify-center mb-6">
+            <VisitorCounter pageName="home" />
+          </div>
           <div className="h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent mb-6" />
           <p className="text-base md:text-lg text-gray-800 font-bold">
             حقوق محفوظة مدرسة مجان للتعليم الأساسي ١_٤

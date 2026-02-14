@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Trophy, Target, Users, BookCheck } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { VisitorCounter } from "@/components/VisitorCounter";
 
 const challengeTypes = [
     {
@@ -170,6 +171,13 @@ export default function ChallengesPage() {
                             <strong>سيف</strong> صقر عُماني أصيل، سريع البديهة وحاد الذكاء، يحب التنافس الشريف ويكافئ المتفوقين. استعد للتحديات معه!
                         </p>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Visitor Counter */}
+            <section className="py-8 px-4 bg-gradient-to-b from-sky-50 to-amber-50">
+                <div className="max-w-6xl mx-auto flex justify-center">
+                    <VisitorCounter pageName="challenges" />
                 </div>
             </section>
 

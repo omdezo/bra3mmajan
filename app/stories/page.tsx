@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, Heart, Lightbulb, Globe } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { VisitorCounter } from "@/components/VisitorCounter";
 
 const storyCategories = [
     {
@@ -163,6 +164,13 @@ export default function StoriesPage() {
                             <strong>جدي سالم</strong> رجل حكيم يرتدي الدشداشة والمصر، يجلس تحت شجرة السدر ويروي القصص بصوته الدافئ. معه ستتعلم الحكمة والقيم من خلال القصص الشيقة!
                         </p>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Visitor Counter */}
+            <section className="py-8 px-4 bg-gradient-to-b from-indigo-900/50 to-yellow-900/30">
+                <div className="max-w-6xl mx-auto flex justify-center">
+                    <VisitorCounter pageName="stories" />
                 </div>
             </section>
 

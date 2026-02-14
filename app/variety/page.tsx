@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Palette, Castle, Music, GraduationCap } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { VisitorCounter } from "@/components/VisitorCounter";
 
 const varietyContent = [
     {
@@ -158,6 +159,13 @@ export default function VarietyPage() {
                             <strong>مها</strong> - المهاة العُمانية، رشيقة ولطيفة، ترمز للجمال العُماني الأصيل، ترشد الأطفال في قسم المنوعات وتقدم لهم الأنشطة المتنوعة بأسلوب محبب!
                         </p>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Visitor Counter */}
+            <section className="py-8 px-4 bg-gradient-to-b from-amber-100 to-amber-200">
+                <div className="max-w-6xl mx-auto flex justify-center">
+                    <VisitorCounter pageName="variety" />
                 </div>
             </section>
 
