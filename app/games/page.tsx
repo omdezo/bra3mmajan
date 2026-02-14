@@ -20,7 +20,7 @@ const games = [
         accentColor: "blue",
         difficulty: "سهل",
         stars: 3,
-        players: "1,234"
+        players: "١٬٢٣٤"
     },
     {
         id: 2,
@@ -33,7 +33,7 @@ const games = [
         accentColor: "green",
         difficulty: "متوسط",
         stars: 4,
-        players: "987"
+        players: "٩٨٧"
     },
     {
         id: 3,
@@ -46,7 +46,7 @@ const games = [
         accentColor: "purple",
         difficulty: "صعب",
         stars: 5,
-        players: "756"
+        players: "٧٥٦"
     },
     {
         id: 4,
@@ -59,7 +59,7 @@ const games = [
         accentColor: "pink",
         difficulty: "سهل",
         stars: 3,
-        players: "1,456"
+        players: "١٬٤٥٦"
     }
 ];
 

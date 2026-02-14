@@ -4,13 +4,14 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { toArabicNumerals } from "@/lib/arabicNumbers";
 
 const collectibles = [
-    { id: 1, icon: "📜", points: 100, position: { top: "25%", left: "20%" } },
-    { id: 2, icon: "💎", points: 150, position: { top: "35%", right: "25%" } },
-    { id: 3, icon: "⭐", points: 200, position: { top: "45%", left: "40%" } },
-    { id: 4, icon: "🏆", points: 250, position: { top: "30%", left: "60%" } },
-    { id: 5, icon: "💫", points: 300, position: { top: "50%", right: "35%" } },
+    { id: 1, icon: "📜", points: 100, displayPoints: "١٠٠", position: { top: "25%", left: "20%" } },
+    { id: 2, icon: "💎", points: 150, displayPoints: "١٥٠", position: { top: "35%", right: "25%" } },
+    { id: 3, icon: "⭐", points: 200, displayPoints: "٢٠٠", position: { top: "45%", left: "40%" } },
+    { id: 4, icon: "🏆", points: 250, displayPoints: "٢٥٠", position: { top: "30%", left: "60%" } },
+    { id: 5, icon: "💫", points: 300, displayPoints: "٣٠٠", position: { top: "50%", right: "35%" } },
 ];
 
 export function ChallengesSection() {
@@ -171,7 +172,7 @@ export function ChallengesSection() {
 
                             {/* Points Badge */}
                             <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-black text-sm px-3 py-1.5 rounded-full border-3 border-white shadow-lg">
-                                +{item.points}
+                                +{item.displayPoints}
                             </div>
                         </div>
                     </motion.div>
@@ -202,7 +203,7 @@ export function ChallengesSection() {
                             initial={{ scale: 1.5 }}
                             animate={{ scale: 1 }}
                         >
-                            {totalScore}
+                            {toArabicNumerals(totalScore)}
                         </motion.p>
                     </div>
                 </div>
@@ -278,7 +279,7 @@ export function ChallengesSection() {
                             أكملت التحدي بنجاح!
                         </p>
                         <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-8 py-4 rounded-full text-3xl font-black mb-6">
-                            {totalScore} نقطة 🏆
+                            {toArabicNumerals(totalScore)} نقطة 🏆
                         </div>
                         <button
                             onClick={() => {
