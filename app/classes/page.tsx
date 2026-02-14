@@ -120,12 +120,16 @@ export default function ClassesPage() {
             {/* رقمنة المناهج العمانية - Digital Curriculum Initiative */}
             <section className="py-12 px-4">
                 <div className="max-w-6xl mx-auto">
-                    <motion.div
+                    <motion.a
+                        href="https://ict.moe.gov.om/"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         initial={{ opacity: 0, scale: 0.9, y: 30 }}
                         whileInView={{ opacity: 1, scale: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 p-1 shadow-[0_20px_60px_rgba(5,150,105,0.4)]"
+                        whileHover={{ scale: 1.02 }}
+                        className="block relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 p-1 shadow-[0_20px_60px_rgba(5,150,105,0.4)] cursor-pointer"
                     >
                         {/* Animated Background Pattern */}
                         <div className="absolute inset-0 opacity-20">
@@ -240,7 +244,7 @@ export default function ClassesPage() {
                             <div className="absolute top-4 left-4 text-2xl opacity-30">🎓</div>
                             <div className="absolute bottom-4 right-4 text-2xl opacity-30">📱</div>
                         </div>
-                    </motion.div>
+                    </motion.a>
                 </div>
             </section>
 

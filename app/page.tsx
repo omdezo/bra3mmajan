@@ -102,17 +102,9 @@ export default function Home() {
 
       <footer className="w-full bg-[#FFB580] py-16 text-center relative z-20 border-t-4 border-purple-500" dir="rtl">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
-          <div className="relative w-full max-w-6xl mx-auto h-64 md:h-80 lg:h-96 mb-8">
-            <Image
-              src="/assets/مدرسة مجـــــان للتعليم الأساسي الصفوف (1-4).jpg"
-              alt="مدرسة مجـــــان للتعليم الأساسي الصفوف (1-4)"
-              fill
-              className="object-contain"
-            />
-          </div>
           <div className="h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent mb-6" />
           <p className="text-base md:text-lg text-gray-800 font-bold">
-            جميع الحقوق محفوظة © براعم مجان 2026
+            حقوق محفوظة مدرسة مجان للتعليم الأساسي ١_٤
           </p>
         </div>
       </footer>

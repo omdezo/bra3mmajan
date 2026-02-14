@@ -22,7 +22,7 @@ const worlds = [
         color: "from-purple-400 to-purple-600",
         bgColor: "bg-purple-500",
         icon: "أبج",
-        scenery: ["🏰", "📜"],
+        scenery: ["/assets/omani_fort_model.png", "📜"],
         description: "اكتشف جمال اللغة العربية",
         link: "/games/language"
     },
@@ -102,10 +102,32 @@ export function GamesSection() {
 
                             {/* Scenery */}
                             <div className="absolute bottom-[20vh] right-[8%] opacity-80 z-10">
-                                <span className="text-[8rem]">{world.scenery[0]}</span>
+                                {world.scenery[0].startsWith('/') ? (
+                                    <div className="relative w-32 h-32">
+                                        <Image
+                                            src={world.scenery[0]}
+                                            alt="Scenery"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                ) : (
+                                    <span className="text-[8rem]">{world.scenery[0]}</span>
+                                )}
                             </div>
                             <div className="absolute bottom-[22vh] right-[30%] opacity-70 z-10">
-                                <span className="text-[6rem]">{world.scenery[1]}</span>
+                                {world.scenery[1].startsWith('/') ? (
+                                    <div className="relative w-24 h-24">
+                                        <Image
+                                            src={world.scenery[1]}
+                                            alt="Scenery"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                ) : (
+                                    <span className="text-[6rem]">{world.scenery[1]}</span>
+                                )}
                             </div>
 
                             {/* Game Portal Card */}
