@@ -27,33 +27,62 @@ export function ChallengesSection() {
     };
 
     return (
-        <section ref={containerRef} className="relative min-h-screen bg-gradient-to-b from-sky-400 via-sky-300 to-amber-100 overflow-hidden flex items-center justify-center perspective-1000">
+        <section ref={containerRef} className="relative min-h-screen bg-gradient-to-b from-sky-500 via-cyan-400 to-amber-200 overflow-hidden flex items-center justify-center perspective-1000">
 
-            {/* Sky Background with Clouds */}
+            {/* Animated Sun */}
+            <motion.div
+                className="absolute top-12 right-16 w-24 h-24 md:w-32 md:h-32 bg-yellow-300 rounded-full shadow-[0_0_80px_rgba(253,224,71,0.8)]"
+                animate={{
+                    scale: [1, 1.1, 1],
+                    boxShadow: [
+                        '0 0 80px rgba(253,224,71,0.8)',
+                        '0 0 100px rgba(253,224,71,1)',
+                        '0 0 80px rgba(253,224,71,0.8)'
+                    ]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+            >
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-200 to-orange-400" />
+            </motion.div>
+
+            {/* Enhanced Sky with Clouds */}
             <div className="absolute inset-0">
                 {/* Floating Clouds */}
-                <motion.div
-                    className="absolute top-10 left-[10%] w-40 h-20 md:w-64 md:h-32 bg-white/70 blur-xl rounded-full"
-                    animate={{ x: [-100, 100, -100] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.div
-                    className="absolute top-[30%] right-[15%] w-32 h-16 md:w-48 md:h-24 bg-white/60 blur-xl rounded-full"
-                    animate={{ x: [100, -100, 100] }}
-                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.div
-                    className="absolute top-[50%] left-[30%] w-48 h-24 md:w-72 md:h-36 bg-white/50 blur-xl rounded-full"
-                    animate={{ x: [-50, 50, -50] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                />
+                {[...Array(5)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className={`absolute bg-white/70 blur-xl rounded-full`}
+                        style={{
+                            top: `${15 + i * 12}%`,
+                            left: `${i % 2 === 0 ? 10 + i * 15 : 70 - i * 10}%`,
+                            width: `${120 + i * 30}px`,
+                            height: `${60 + i * 15}px`
+                        }}
+                        animate={{
+                            x: i % 2 === 0 ? [-100, 100, -100] : [100, -100, 100],
+                            opacity: [0.5, 0.8, 0.5]
+                        }}
+                        transition={{
+                            duration: 20 + i * 5,
+                            repeat: Infinity,
+                            ease: "linear"
+                        }}
+                    />
+                ))}
             </div>
 
-            {/* Mountain Range at Bottom */}
-            <div className="absolute bottom-0 w-full h-[30%] opacity-30">
-                <svg viewBox="0 0 1200 300" className="w-full h-full" preserveAspectRatio="none">
-                    <path d="M0,300 L0,200 L200,100 L400,150 L600,50 L800,120 L1000,80 L1200,180 L1200,300 Z" fill="#8B4513" opacity="0.6" />
-                    <path d="M0,300 L0,250 L150,180 L350,220 L550,150 L750,200 L950,170 L1200,220 L1200,300 Z" fill="#A0522D" opacity="0.5" />
+            {/* Desert Mountains at Bottom */}
+            <div className="absolute bottom-0 w-full h-[35%]">
+                <svg viewBox="0 0 1200 350" className="w-full h-full" preserveAspectRatio="none">
+                    {/* Back mountains */}
+                    <path d="M0,350 L0,220 L200,120 L400,170 L600,80 L800,140 L1000,100 L1200,200 L1200,350 Z"
+                        fill="#D4A574" opacity="0.7" />
+                    {/* Middle mountains */}
+                    <path d="M0,350 L0,260 L150,190 L350,230 L550,170 L750,210 L950,180 L1200,240 L1200,350 Z"
+                        fill="#C19A6B" opacity="0.8" />
+                    {/* Front mountains */}
+                    <path d="M0,350 L0,290 L180,240 L380,270 L580,220 L780,260 L980,240 L1200,280 L1200,350 Z"
+                        fill="#B8956A" opacity="0.9" />
                 </svg>
             </div>
 
@@ -98,34 +127,50 @@ export function ChallengesSection() {
                 )}
             </motion.div>
 
-            {/* Collectible Items */}
+            {/* Enhanced Collectible Items */}
             {collectibles.map((item, index) => (
                 !collectedItems.includes(item.id) && (
                     <motion.div
                         key={item.id}
                         className="absolute z-20 cursor-pointer"
                         style={{ ...item.position, willChange: 'transform' }}
-                        initial={{ opacity: 0, scale: 0 }}
+                        initial={{ opacity: 0, scale: 0, rotate: -180 }}
                         animate={{
                             opacity: 1,
-                            scale: [1, 1.2, 1],
-                            y: [0, -15, 0]
+                            scale: [1, 1.15, 1],
+                            y: [0, -20, 0],
+                            rotate: 0
                         }}
                         transition={{
                             opacity: { delay: index * 0.2 },
-                            scale: { duration: 2, repeat: Infinity, delay: index * 0.3 },
-                            y: { duration: 2, repeat: Infinity, delay: index * 0.3 }
+                            rotate: { delay: index * 0.2, duration: 0.6 },
+                            scale: { duration: 2.5, repeat: Infinity, delay: index * 0.4 },
+                            y: { duration: 2.5, repeat: Infinity, delay: index * 0.4, ease: "easeInOut" }
                         }}
                         onClick={() => handleCollect(item.id, item.points)}
-                        whileHover={{ scale: 1.5, rotate: 360 }}
+                        whileHover={{ scale: 1.6, rotate: 360 }}
                         whileTap={{ scale: 0.5 }}
                     >
                         <div className="relative">
-                            <div className="w-16 h-16 md:w-20 md:h-20 bg-white/90 backdrop-blur rounded-full border-4 border-yellow-400 shadow-2xl flex items-center justify-center">
-                                <span className="text-3xl md:text-4xl">{item.icon}</span>
+                            {/* Glow effect */}
+                            <div className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 bg-yellow-300/40 rounded-full blur-xl" />
+
+                            {/* Main badge */}
+                            <div className="relative w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-white to-yellow-50 backdrop-blur rounded-full border-4 border-yellow-400 shadow-[0_8px_25px_rgba(0,0,0,0.3)] flex items-center justify-center">
+                                <span className="text-4xl md:text-5xl drop-shadow-lg">{item.icon}</span>
+
+                                {/* Sparkle effect */}
+                                <motion.div
+                                    className="absolute -top-1 -right-1 text-yellow-300 text-xl"
+                                    animate={{ rotate: [0, 360], scale: [1, 1.3, 1] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                >
+                                    ✨
+                                </motion.div>
                             </div>
+
                             {/* Points Badge */}
-                            <div className="absolute -top-2 -right-2 bg-yellow-500 text-white font-black text-xs px-2 py-1 rounded-full border-2 border-yellow-600">
+                            <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-black text-sm px-3 py-1.5 rounded-full border-3 border-white shadow-lg">
                                 +{item.points}
                             </div>
                         </div>
@@ -133,44 +178,85 @@ export function ChallengesSection() {
                 )
             ))}
 
-            {/* Score HUD */}
-            <div className="absolute top-20 md:top-10 left-4 md:left-10 z-40 bg-white/95 backdrop-blur-md p-4 md:p-6 rounded-2xl border-4 border-sky-500 shadow-xl" dir="rtl">
-                <div className="flex items-center gap-4">
-                    <div className="text-4xl">🎯</div>
+            {/* Enhanced Score HUD */}
+            <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="absolute top-24 md:top-20 left-4 md:left-8 z-40 bg-gradient-to-br from-white to-blue-50 backdrop-blur-xl p-5 md:p-6 rounded-3xl border-4 border-blue-400 shadow-[0_8px_30px_rgba(0,0,0,0.15)]"
+                dir="rtl"
+            >
+                <div className="flex items-center gap-4 mb-4">
+                    <motion.div
+                        className="text-5xl"
+                        animate={{ rotate: [0, 10, -10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                    >
+                        🎯
+                    </motion.div>
                     <div>
-                        <p className="text-sm text-sky-600 font-bold">النقاط</p>
-                        <p className="text-3xl md:text-4xl font-black text-sky-700">{totalScore}</p>
+                        <p className="text-sm text-blue-600 font-bold">النقاط</p>
+                        <motion.p
+                            className="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent"
+                            key={totalScore}
+                            initial={{ scale: 1.5 }}
+                            animate={{ scale: 1 }}
+                        >
+                            {totalScore}
+                        </motion.p>
                     </div>
                 </div>
-                <div className="mt-3 flex items-center gap-2">
-                    <div className="text-2xl">💎</div>
-                    <div className="flex-1 bg-sky-100 rounded-full h-3 overflow-hidden">
-                        <motion.div
-                            className="bg-gradient-to-r from-sky-500 to-blue-600 h-full rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${(collectedItems.length / collectibles.length) * 100}%` }}
-                            transition={{ duration: 0.5 }}
-                        />
+                <div className="flex items-center gap-3 bg-blue-50 rounded-2xl p-3">
+                    <div className="text-3xl">💎</div>
+                    <div className="flex-1">
+                        <div className="bg-white rounded-full h-4 overflow-hidden shadow-inner border-2 border-blue-200">
+                            <motion.div
+                                className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 h-full rounded-full relative"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(collectedItems.length / collectibles.length) * 100}%` }}
+                                transition={{ duration: 0.5, type: "spring" }}
+                            >
+                                {/* Shine effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                            </motion.div>
+                        </div>
+                        <p className="text-xs font-bold text-blue-600 mt-1 text-center">
+                            {collectedItems.length}/{collectibles.length} كنز
+                        </p>
                     </div>
-                    <span className="text-sm font-bold text-sky-700">{collectedItems.length}/{collectibles.length}</span>
                 </div>
-            </div>
+            </motion.div>
 
-            {/* Game Info Card */}
-            <div className="absolute bottom-6 md:bottom-10 right-4 md:right-10 z-40 bg-gradient-to-br from-sky-600 to-blue-700 text-white p-4 md:p-6 rounded-2xl border-4 border-sky-400 shadow-xl max-w-xs" dir="rtl">
-                <h2 className="text-2xl md:text-3xl font-black mb-2 drop-shadow-lg">تحليق الصقر</h2>
-                <p className="text-sm md:text-base font-bold leading-snug mb-3">
-                    حلق مع سيف فوق جبال عُمان!
-                    <br />
-                    <span className="text-yellow-300">اجمع كل الكنوز لتفوز! 🏆</span>
-                </p>
+            {/* Enhanced Game Info Card */}
+            <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="absolute bottom-6 md:bottom-10 right-4 md:right-10 z-40 bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 text-white p-6 md:p-8 rounded-3xl border-4 border-cyan-300 shadow-[0_12px_40px_rgba(0,0,0,0.2)] max-w-sm"
+                dir="rtl"
+            >
+                {/* Decorative stars */}
+                <div className="absolute -top-2 -right-2 text-yellow-300 text-3xl animate-spin-slow">⭐</div>
+                <div className="absolute -bottom-2 -left-2 text-yellow-300 text-2xl animate-pulse">🌟</div>
+
+                <h2 className="text-3xl md:text-4xl font-black mb-3 drop-shadow-lg flex items-center gap-2">
+                    <span>🦅</span>
+                    <span>تحليق الصقر</span>
+                </h2>
+                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-4">
+                    <p className="text-base md:text-lg font-bold leading-relaxed">
+                        حلق مع سيف فوق جبال عُمان الشامخة!
+                        <br />
+                        <span className="text-yellow-300 text-xl">✨ اجمع كل الكنوز لتفوز! 🏆</span>
+                    </p>
+                </div>
                 <Link
                     href="/challenges"
-                    className="block text-center bg-gradient-to-r from-yellow-400 to-orange-400 text-sky-900 font-bold px-6 py-3 rounded-full hover:from-yellow-500 hover:to-orange-500 transition-all shadow-lg active:scale-95"
+                    className="block text-center bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-500 text-blue-900 font-black px-8 py-4 rounded-full hover:from-yellow-300 hover:via-orange-300 hover:to-yellow-400 transition-all shadow-[0_6px_20px_rgba(251,191,36,0.5)] hover:shadow-[0_8px_30px_rgba(251,191,36,0.7)] active:scale-95 text-lg border-2 border-yellow-300"
                 >
-                    المزيد من التحديات 🦅
+                    المزيد من التحديات 🎯
                 </Link>
-            </div>
+            </motion.div>
 
             {/* Victory Screen */}
             {collectedItems.length === collectibles.length && (

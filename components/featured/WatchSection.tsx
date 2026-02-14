@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -10,6 +10,18 @@ export function WatchSection() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [showPopcorn, setShowPopcorn] = useState(false);
 
+    // Scroll-based curtain opening animation
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start end", "center center"]
+    });
+
+    // Transform scroll progress to curtain position
+    // 0 = closed (curtains cover screen), 1 = open (curtains moved aside)
+    const curtainProgress = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0, 1]);
+    const leftCurtainX = useTransform(curtainProgress, [0, 1], ["0%", "-100%"]);
+    const rightCurtainX = useTransform(curtainProgress, [0, 1], ["0%", "100%"]);
+
     const handlePlay = () => {
         setIsPlaying(true);
         setShowPopcorn(true);
@@ -18,30 +30,52 @@ export function WatchSection() {
     return (
         <section ref={containerRef} className="relative min-h-screen bg-gradient-to-b from-gray-900 to-black overflow-hidden flex items-center justify-center perspective-1000">
 
-            {/* Cinema Curtains */}
+            {/* Cinema Curtains - Scroll Triggered */}
             <div className="absolute inset-0 flex justify-between pointer-events-none z-40">
-                {/* Left Curtain */}
+                {/* Right Curtain (appears on left in RTL) */}
                 <motion.div
-                    className="w-[15%] md:w-[10%] h-full bg-gradient-to-r from-red-900 to-red-800 shadow-2xl relative"
-                    initial={{ x: 0 }}
-                    animate={{ x: isPlaying ? -100 : 0 }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
+                    className="w-1/2 h-full bg-gradient-to-l from-red-900 via-red-800 to-red-900 shadow-[inset_-20px_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
+                    style={{ x: rightCurtainX }}
                 >
-                    <div className="absolute right-0 top-0 h-full w-4 bg-red-950 skew-x-6" />
+                    {/* Curtain folds */}
+                    <div className="absolute inset-0">
+                        {[...Array(12)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute h-full w-[8.33%] bg-gradient-to-r from-red-950/30 to-transparent"
+                                style={{ left: `${i * 8.33}%` }}
+                            />
+                        ))}
+                    </div>
+                    {/* Edge detail */}
+                    <div className="absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-red-950 to-transparent shadow-2xl" />
+                    {/* Golden trim */}
+                    <div className="absolute left-0 top-0 h-full w-2 bg-gradient-to-b from-yellow-600 via-yellow-500 to-yellow-600" />
                 </motion.div>
 
-                {/* Right Curtain */}
+                {/* Left Curtain (appears on right in RTL) */}
                 <motion.div
-                    className="w-[15%] md:w-[10%] h-full bg-gradient-to-l from-red-900 to-red-800 shadow-2xl relative"
-                    initial={{ x: 0 }}
-                    animate={{ x: isPlaying ? 100 : 0 }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
+                    className="w-1/2 h-full bg-gradient-to-r from-red-900 via-red-800 to-red-900 shadow-[inset_20px_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
+                    style={{ x: leftCurtainX }}
                 >
-                    <div className="absolute left-0 top-0 h-full w-4 bg-red-950 -skew-x-6" />
+                    {/* Curtain folds */}
+                    <div className="absolute inset-0">
+                        {[...Array(12)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute h-full w-[8.33%] bg-gradient-to-l from-red-950/30 to-transparent"
+                                style={{ right: `${i * 8.33}%` }}
+                            />
+                        ))}
+                    </div>
+                    {/* Edge detail */}
+                    <div className="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-red-950 to-transparent shadow-2xl" />
+                    {/* Golden trim */}
+                    <div className="absolute right-0 top-0 h-full w-2 bg-gradient-to-b from-yellow-600 via-yellow-500 to-yellow-600" />
                 </motion.div>
 
                 {/* Top Valance */}
-                <div className="absolute top-0 w-full h-16 md:h-24 bg-gradient-to-b from-red-800 to-red-700 rounded-b-[50%] shadow-xl flex justify-center items-end pb-2 md:pb-4">
+                <div className="absolute top-0 w-full h-16 md:h-24 bg-gradient-to-b from-red-800 to-red-700 rounded-b-[50%] shadow-xl flex justify-center items-end pb-2 md:pb-4 border-b-4 border-yellow-600">
                     <span className="text-2xl md:text-3xl text-yellow-400 font-serif tracking-widest drop-shadow-md">سينما براعم</span>
                 </div>
             </div>
@@ -55,49 +89,64 @@ export function WatchSection() {
                 }}
                 transition={{ duration: 0.5 }}
             >
-                {/* Movie Content */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900 to-blue-900">
-                    {!isPlaying ? (
-                        <div className="text-center" dir="rtl">
-                            <motion.div
-                                className="text-6xl md:text-8xl mb-6"
-                                animate={{ scale: [1, 1.2, 1] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                            >
-                                ▶️
-                            </motion.div>
-                            <h2 className="text-4xl md:text-6xl font-black text-white mb-4">قريباً</h2>
-                            <p className="text-gray-300 mt-4 text-xl md:text-2xl font-bold">مغامرات شيقة مع فرح!</p>
-                            <motion.button
-                                onClick={handlePlay}
-                                className="mt-8 px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-black text-lg md:text-xl hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-4 focus:ring-purple-300 transition-all shadow-2xl"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                شغل الفيلم! 🎬
-                            </motion.button>
-                        </div>
-                    ) : (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-center" dir="rtl"
-                        >
-                            <div className="text-5xl md:text-7xl mb-4">🎬</div>
-                            <h3 className="text-3xl md:text-5xl font-black text-white mb-4">الآن يعرض...</h3>
-                            <motion.div
-                                className="text-4xl md:text-6xl"
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                            >
-                                🎥
-                            </motion.div>
-                            <p className="text-xl md:text-2xl text-purple-300 mt-6 font-bold">مغامرة فرح المثيرة!</p>
-                        </motion.div>
-                    )}
+                {/* Movie Content - Shows cinema characters when curtains open */}
+                <div className="absolute inset-0">
+                    <motion.div
+                        className="relative w-full h-full"
+                        style={{ opacity: curtainProgress }}
+                    >
+                        <Image
+                            src="/assets/cinemaCharecters.jpeg"
+                            alt="شخصيات براعم مجان"
+                            fill
+                            className="object-cover"
+                        />
+                    </motion.div>
 
-                    {/* Scanlines */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] pointer-events-none opacity-30" />
+                    {/* Overlay content */}
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900/80 to-blue-900/80">
+                        {!isPlaying ? (
+                            <div className="text-center" dir="rtl">
+                                <motion.div
+                                    className="text-6xl md:text-8xl mb-6"
+                                    animate={{ scale: [1, 1.2, 1] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                >
+                                    ▶️
+                                </motion.div>
+                                <h2 className="text-4xl md:text-6xl font-black text-white mb-4">قريباً</h2>
+                                <p className="text-gray-300 mt-4 text-xl md:text-2xl font-bold">مغامرات شيقة مع فرح!</p>
+                                <motion.button
+                                    onClick={handlePlay}
+                                    className="mt-8 px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-black text-lg md:text-xl hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-4 focus:ring-purple-300 transition-all shadow-2xl"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                >
+                                    شغّل الفيلم! 🎬
+                                </motion.button>
+                            </div>
+                        ) : (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="text-center" dir="rtl"
+                            >
+                                <div className="text-5xl md:text-7xl mb-4">🎬</div>
+                                <h3 className="text-3xl md:text-5xl font-black text-white mb-4">الآن يعرض...</h3>
+                                <motion.div
+                                    className="text-4xl md:text-6xl"
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                >
+                                    🎥
+                                </motion.div>
+                                <p className="text-xl md:text-2xl text-purple-300 mt-6 font-bold">مغامرة فرح المثيرة!</p>
+                            </motion.div>
+                        )}
+
+                        {/* Scanlines */}
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] pointer-events-none opacity-30" />
+                    </div>
                 </div>
 
                 {/* Lulwah Character */}
