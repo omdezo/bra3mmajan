@@ -80,28 +80,35 @@ export default function GamesPage() {
             {/* Animated Background Elements */}
             <div className="absolute inset-0 overflow-hidden">
                 {/* Floating Shapes */}
-                {[...Array(20)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute"
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                        }}
-                        animate={{
-                            y: [0, -30, 0],
-                            rotate: [0, 360],
-                            scale: [1, 1.2, 1],
-                        }}
-                        transition={{
-                            duration: Math.random() * 5 + 5,
-                            repeat: Infinity,
-                            ease: "linear"
-                        }}
-                    >
-                        {['⭐', '🎮', '🏆', '💎', '🎯'][i % 5]}
-                    </motion.div>
-                ))}
+                {[...Array(20)].map((_, i) => {
+                    // Deterministic positions based on index
+                    const left = (i * 37 + 13) % 100;
+                    const top = (i * 47 + 23) % 100;
+                    const duration = (i % 5) + 5;
+
+                    return (
+                        <motion.div
+                            key={i}
+                            className="absolute"
+                            style={{
+                                left: `${left}%`,
+                                top: `${top}%`,
+                            }}
+                            animate={{
+                                y: [0, -30, 0],
+                                rotate: [0, 360],
+                                scale: [1, 1.2, 1],
+                            }}
+                            transition={{
+                                duration: duration,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
+                        >
+                            {['⭐', '🎮', '🏆', '💎', '🎯'][i % 5]}
+                        </motion.div>
+                    );
+                })}
 
                 {/* Grid Pattern */}
                 <div className="absolute inset-0 opacity-10">
@@ -258,25 +265,31 @@ export default function GamesPage() {
                                     {/* Sparkle Effects on Hover */}
                                     {hoveredGame === game.id && (
                                         <>
-                                            {[...Array(5)].map((_, i) => (
-                                                <motion.div
-                                                    key={i}
-                                                    className="absolute text-3xl"
-                                                    style={{
-                                                        left: `${Math.random() * 100}%`,
-                                                        top: `${Math.random() * 100}%`,
-                                                    }}
-                                                    initial={{ scale: 0, opacity: 0 }}
-                                                    animate={{
-                                                        scale: [0, 1.5, 0],
-                                                        opacity: [0, 1, 0],
-                                                        y: [0, -50]
-                                                    }}
-                                                    transition={{ duration: 1, delay: i * 0.1 }}
-                                                >
-                                                    ✨
-                                                </motion.div>
-                                            ))}
+                                            {[...Array(5)].map((_, i) => {
+                                                // Deterministic positions based on index
+                                                const left = (i * 25 + 10) % 90;
+                                                const top = (i * 30 + 15) % 80;
+
+                                                return (
+                                                    <motion.div
+                                                        key={i}
+                                                        className="absolute text-3xl"
+                                                        style={{
+                                                            left: `${left}%`,
+                                                            top: `${top}%`,
+                                                        }}
+                                                        initial={{ scale: 0, opacity: 0 }}
+                                                        animate={{
+                                                            scale: [0, 1.5, 0],
+                                                            opacity: [0, 1, 0],
+                                                            y: [0, -50]
+                                                        }}
+                                                        transition={{ duration: 1, delay: i * 0.1 }}
+                                                    >
+                                                        ✨
+                                                    </motion.div>
+                                                );
+                                            })}
                                         </>
                                     )}
 

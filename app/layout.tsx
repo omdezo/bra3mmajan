@@ -12,6 +12,15 @@ const rubik = Rubik({
 export const metadata: Metadata = {
   title: "Baraem Majan | براعم مجان",
   description: "منصة تعليمية ترفيهية للأطفال - تنمو بالعلم... تزهو بعمان",
+  icons: {
+    icon: [
+      { url: "/assets/logo.png" },
+      { url: "/assets/logo.png", sizes: "32x32", type: "image/png" },
+      { url: "/assets/logo.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/assets/logo.png",
+    shortcut: "/assets/logo.png",
+  },
 };
 
 export default function RootLayout({

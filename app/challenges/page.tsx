@@ -33,9 +33,9 @@ const challengeTypes = [
     },
     {
         id: 4,
-        title: "اختبارات المواد",
+        title: "أختبر نفسك",
         icon: Trophy,
-        description: "راجع دروسك واختبر نفسك",
+        description: "ذاكر دروسك ثم أختبر نفسك",
         color: "from-green-500 to-green-700",
         bgColor: "bg-green-100"
     }
@@ -48,17 +48,22 @@ export default function ChallengesPage() {
             {/* Hero Section */}
             <section className="relative py-20 px-4 overflow-hidden">
                 <div className="absolute inset-0">
-                    {[...Array(10)].map((_, i) => (
-                        <motion.div
-                            key={i}
-                            className="absolute w-16 h-16 md:w-24 md:h-24 text-4xl md:text-5xl opacity-20"
-                            style={{ top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%` }}
-                            animate={{ y: [0, -50, 0], rotate: [0, 360, 0] }}
-                            transition={{ duration: Math.random() * 5 + 5, repeat: Infinity }}
-                        >
-                            🏆
-                        </motion.div>
-                    ))}
+                    {[...Array(10)].map((_, i) => {
+                        const top = (i * 41 + 19) % 100;
+                        const left = (i * 33 + 27) % 100;
+                        const duration = (i % 5) + 5;
+                        return (
+                            <motion.div
+                                key={i}
+                                className="absolute w-16 h-16 md:w-24 md:h-24 text-4xl md:text-5xl opacity-20"
+                                style={{ top: `${top}%`, left: `${left}%` }}
+                                animate={{ y: [0, -50, 0], rotate: [0, 360, 0] }}
+                                transition={{ duration: duration, repeat: Infinity }}
+                            >
+                                🏆
+                            </motion.div>
+                        );
+                    })}
                 </div>
 
                 <div className="max-w-6xl mx-auto relative z-10">
@@ -136,13 +141,26 @@ export default function ChallengesPage() {
                                     <h3 className="text-3xl font-black text-gray-800 mb-3">{challenge.title}</h3>
                                     <p className="text-lg text-gray-600 leading-relaxed mb-6">{challenge.description}</p>
 
-                                    <button className="px-6 py-3 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-full font-bold hover:from-sky-600 hover:to-sky-700 transition-all shadow-lg active:scale-95">
-                                        ابدأ التحدي
-                                    </button>
+                                    {challenge.id === 4 ? (
+                                        <a
+                                            href="https://ict.moe.gov.om/"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-block px-6 py-3 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-full font-bold hover:from-sky-600 hover:to-sky-700 transition-all shadow-lg active:scale-95"
+                                        >
+                                            ابدأ التحدي
+                                        </a>
+                                    ) : (
+                                        <button className="px-6 py-3 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-full font-bold hover:from-sky-600 hover:to-sky-700 transition-all shadow-lg active:scale-95">
+                                            ابدأ التحدي
+                                        </button>
+                                    )}
 
-                                    <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-black text-sm border-2 border-yellow-600">
-                                        قريباً
-                                    </div>
+                                    {challenge.id !== 4 && (
+                                        <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-black text-sm border-2 border-yellow-600">
+                                            قريباً
+                                        </div>
+                                    )}
                                 </div>
                             </motion.div>
                         ))}

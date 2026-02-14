@@ -33,7 +33,7 @@ const varietyContent = [
     },
     {
         id: 4,
-        title: "ركن المدرسة",
+        title: "تقنيات التعليم",
         icon: GraduationCap,
         description: "شروحات للمنهج العُماني، تمارين تفاعلية، مراجعات",
         color: "from-blue-500 to-blue-700",

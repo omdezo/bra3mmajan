@@ -31,6 +31,25 @@ export default function Home() {
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden" aria-label="قسم البداية - براعم مجان">
         <CloudScene />
 
+        {/* رقمنة المناهج العمانية Badge */}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="absolute top-24 right-4 md:right-8 z-30"
+          dir="rtl"
+        >
+          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white px-6 py-4 rounded-2xl shadow-[0_8px_30px_rgba(5,150,105,0.4)] border-4 border-emerald-300">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">📚</span>
+              <div>
+                <p className="text-sm font-bold text-emerald-100">مبادرة</p>
+                <p className="text-lg font-black text-white">رقمنة المناهج العمانية</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         <div className="z-20 text-center relative px-4">
           <motion.div
             animate={{ y: [0, -20, 0] }}
@@ -56,7 +75,7 @@ export default function Home() {
             بَراعِم مَجان
           </motion.h1>
           <p className="text-xl md:text-2xl lg:text-4xl text-white font-bold text-center mt-6 drop-shadow-lg animate-pulse px-4">
-            أغمض عينيك... وانطلق معنا في السماء!
+            المستقبل ليس مكاناً نذهب إليه، بل هو شيء نصنعه معاً.
           </p>
           <div className="mt-12 animate-bounce" role="status" aria-live="polite">
             <span className="text-white text-base md:text-lg">مرر للأسفل للهبوط في عالمنا</span>
@@ -100,8 +119,21 @@ export default function Home() {
 
       </div>
 
-      <footer className="w-full bg-slate-900 text-white py-10 text-center relative z-20">
-        <p className="text-lg">جميع الحقوق محفوظة © براعم مجان 2026</p>
+      <footer className="w-full bg-[#FFB580] py-16 text-center relative z-20 border-t-4 border-purple-500" dir="rtl">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+          <div className="relative w-full max-w-6xl mx-auto h-64 md:h-80 lg:h-96 mb-8">
+            <Image
+              src="/assets/مدرسة مجـــــان للتعليم الأساسي الصفوف (1-4).jpg"
+              alt="مدرسة مجـــــان للتعليم الأساسي الصفوف (1-4)"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <div className="h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent mb-6" />
+          <p className="text-base md:text-lg text-gray-800 font-bold">
+            جميع الحقوق محفوظة © براعم مجان 2026
+          </p>
+        </div>
       </footer>
     </motion.main>
   );
