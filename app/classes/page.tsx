@@ -120,16 +120,12 @@ export default function ClassesPage() {
             {/* رقمنة المناهج العمانية - Digital Curriculum Initiative */}
             <section className="py-12 px-4">
                 <div className="max-w-6xl mx-auto">
-                    <motion.a
-                        href="https://ict.moe.gov.om/"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 30 }}
                         whileInView={{ opacity: 1, scale: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        whileHover={{ scale: 1.02 }}
-                        className="block relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 p-1 shadow-[0_20px_60px_rgba(5,150,105,0.4)] cursor-pointer"
+                        className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 p-1 shadow-[0_20px_60px_rgba(5,150,105,0.4)]"
                     >
                         {/* Animated Background Pattern */}
                         <div className="absolute inset-0 opacity-20">
@@ -198,43 +194,22 @@ export default function ClassesPage() {
                                             </span>
                                         </h2>
 
-                                        <p className="text-lg md:text-xl lg:text-2xl text-gray-700 font-bold leading-relaxed mb-6">
+                                        <p className="text-lg md:text-xl lg:text-2xl text-gray-700 font-bold leading-relaxed mb-8">
                                             نحول التعليم التقليدي إلى تجربة رقمية تفاعلية حديثة
                                             <br />
                                             <span className="text-emerald-700">مواكبة رؤية عُمان 2040 في التعليم الرقمي 🚀</span>
                                         </p>
 
-                                        {/* Stats/Features */}
-                                        <div className="flex flex-wrap gap-4 justify-center md:justify-end">
-                                            <div className="bg-white rounded-2xl px-6 py-3 shadow-lg border-2 border-emerald-300">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-2xl">📖</span>
-                                                    <div className="text-right">
-                                                        <p className="text-xs text-gray-600 font-bold">المناهج الرقمية</p>
-                                                        <p className="text-lg font-black text-emerald-700">الصفوف 1-4</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="bg-white rounded-2xl px-6 py-3 shadow-lg border-2 border-teal-300">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-2xl">🎯</span>
-                                                    <div className="text-right">
-                                                        <p className="text-xs text-gray-600 font-bold">التعلم</p>
-                                                        <p className="text-lg font-black text-teal-700">تفاعلي وممتع</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="bg-white rounded-2xl px-6 py-3 shadow-lg border-2 border-cyan-300">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-2xl">💻</span>
-                                                    <div className="text-right">
-                                                        <p className="text-xs text-gray-600 font-bold">الوصول</p>
-                                                        <p className="text-lg font-black text-cyan-700">في أي وقت</p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        {/* Button */}
+                                        <div className="flex justify-center md:justify-end">
+                                            <a
+                                                href="https://ict.moe.gov.om/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-block bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-8 py-4 rounded-2xl font-black text-lg md:text-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all border-4 border-white"
+                                            >
+                                                📖 المناهج الرقمية الصفوف 1-4
+                                            </a>
                                         </div>
                                     </motion.div>
                                 </div>
@@ -244,7 +219,7 @@ export default function ClassesPage() {
                             <div className="absolute top-4 left-4 text-2xl opacity-30">🎓</div>
                             <div className="absolute bottom-4 right-4 text-2xl opacity-30">📱</div>
                         </div>
-                    </motion.a>
+                    </motion.div>
                 </div>
             </section>
 
