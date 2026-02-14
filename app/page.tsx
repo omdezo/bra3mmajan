@@ -54,7 +54,7 @@ export default function Home() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
           >
-            بَراعِم مَجان
+            براعم مجان
           </motion.h1>
           <p className="text-xl md:text-2xl lg:text-4xl text-white font-bold text-center mt-6 drop-shadow-lg animate-pulse px-4">
             المستقبل ليس مكاناً نذهب إليه، بل هو شيء نصنعه معاً.
@@ -108,7 +108,7 @@ export default function Home() {
           </div>
           <div className="h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent mb-6" />
           <p className="text-base md:text-lg text-gray-800 font-bold">
-            حقوق محفوظة مدرسة مجان للتعليم الأساسي ١_٤
+            جميع الحقوق محفوظة © مدرسة مجان للتعليم الأساسي ١-٤
           </p>
         </div>
       </footer>
