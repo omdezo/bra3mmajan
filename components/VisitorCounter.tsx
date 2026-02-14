@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Eye } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toArabicNumerals } from "@/lib/arabicNumbers";
 
 interface VisitorCounterProps {
     pageName: string;
@@ -51,7 +52,7 @@ export function VisitorCounter({ pageName }: VisitorCounterProps) {
                     animate={{ scale: 1, color: "#FFFFFF" }}
                     className="font-black text-lg md:text-xl"
                 >
-                    {visits.toLocaleString('ar-EG')}
+                    {toArabicNumerals(visits)}
                 </motion.span>
             </div>
         </motion.div>

@@ -198,7 +198,7 @@ export default function ClassesPage() {
                                         <p className="text-lg md:text-xl lg:text-2xl text-gray-700 font-bold leading-relaxed mb-8">
                                             نحول التعليم التقليدي إلى تجربة رقمية تفاعلية حديثة
                                             <br />
-                                            <span className="text-emerald-700">مواكبة رؤية عُمان 2040 في التعليم الرقمي 🚀</span>
+                                            <span className="text-emerald-700">مواكبة رؤية عُمان ٢٠٤٠ في التعليم الرقمي 🚀</span>
                                         </p>
 
                                         {/* Button */}
@@ -209,7 +209,7 @@ export default function ClassesPage() {
                                                 rel="noopener noreferrer"
                                                 className="inline-block bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-8 py-4 rounded-2xl font-black text-lg md:text-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all border-4 border-white"
                                             >
-                                                📖 المناهج الرقمية الصفوف 1-4
+                                                📖 المناهج الرقمية الصفوف ١-٤
                                             </a>
                                         </div>
                                     </motion.div>

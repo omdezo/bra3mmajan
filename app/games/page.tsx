@@ -443,7 +443,7 @@ export default function GamesPage() {
                             <div className="text-6xl mb-4">💡</div>
                             <h3 className="text-4xl font-black text-white mb-4">نصيحة من فهد!</h3>
                             <p className="text-2xl text-white font-bold leading-relaxed">
-                                العب كل يوم لمدة 15 دقيقة وستصبح بطلاً في كل الألعاب!
+                                العب كل يوم لمدة ١٥ دقيقة وستصبح بطلاً في كل الألعاب!
                                 <br />
                                 التحدي والمرح ينتظرانك! 🦁⚡
                             </p>
