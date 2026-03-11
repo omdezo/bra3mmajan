@@ -5,47 +5,46 @@ import Link from "next/link";
 import { Video, Calendar, Users, MonitorPlay } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { VisitorCounter } from "@/components/VisitorCounter";
+import { useState, useEffect } from "react";
 
-const virtualClasses = [
-    {
-        id: 1,
-        title: "الصف الأول الأساسي",
-        icon: MonitorPlay,
-        description: "حصص مباشرة وتفاعلية للصف الأول",
-        color: "from-blue-500 to-blue-700",
-        bgColor: "bg-blue-100",
-        teamsLink: "https://teams.microsoft.com"
-    },
-    {
-        id: 2,
-        title: "الصف الثاني الأساسي",
-        icon: MonitorPlay,
-        description: "حصص مباشرة وتفاعلية للصف الثاني",
-        color: "from-green-500 to-green-700",
-        bgColor: "bg-green-100",
-        teamsLink: "https://teams.microsoft.com"
-    },
-    {
-        id: 3,
-        title: "الصف الثالث الأساسي",
-        icon: MonitorPlay,
-        description: "حصص مباشرة وتفاعلية للصف الثالث",
-        color: "from-purple-500 to-purple-700",
-        bgColor: "bg-purple-100",
-        teamsLink: "https://teams.microsoft.com"
-    },
-    {
-        id: 4,
-        title: "الصف الرابع الأساسي",
-        icon: MonitorPlay,
-        description: "حصص مباشرة وتفاعلية للصف الرابع",
-        color: "from-orange-500 to-orange-700",
-        bgColor: "bg-orange-100",
-        teamsLink: "https://teams.microsoft.com"
-    }
+interface ApiClass {
+    _id: string;
+    title: string;
+    subject: string;
+    grade: number;
+    teacher: string;
+    teamsLink: string;
+    description?: string;
+    schedule?: string;
+    day?: string;
+    time?: string;
+    icon: string;
+    color: string;
+    isActive: boolean;
+}
+
+const BG_COLORS = ["bg-blue-100", "bg-green-100", "bg-purple-100", "bg-orange-100", "bg-pink-100", "bg-cyan-100"];
+const GRADIENT_COLORS = ["from-blue-500 to-blue-700", "from-green-500 to-green-700", "from-purple-500 to-purple-700", "from-orange-500 to-orange-700", "from-pink-500 to-pink-700", "from-cyan-500 to-cyan-700"];
+
+const STATIC_CLASSES: ApiClass[] = [
+    { _id: '1', title: "الصف الأول الأساسي", subject: "عام", grade: 1, teacher: "المعلم", icon: "💻", color: "#3B82F6", description: "حصص مباشرة وتفاعلية للصف الأول", teamsLink: "https://teams.microsoft.com", isActive: true },
+    { _id: '2', title: "الصف الثاني الأساسي", subject: "عام", grade: 2, teacher: "المعلم", icon: "💻", color: "#10B981", description: "حصص مباشرة وتفاعلية للصف الثاني", teamsLink: "https://teams.microsoft.com", isActive: true },
+    { _id: '3', title: "الصف الثالث الأساسي", subject: "عام", grade: 3, teacher: "المعلم", icon: "💻", color: "#8B5CF6", description: "حصص مباشرة وتفاعلية للصف الثالث", teamsLink: "https://teams.microsoft.com", isActive: true },
+    { _id: '4', title: "الصف الرابع الأساسي", subject: "عام", grade: 4, teacher: "المعلم", icon: "💻", color: "#F59E0B", description: "حصص مباشرة وتفاعلية للصف الرابع", teamsLink: "https://teams.microsoft.com", isActive: true },
 ];
 
 export default function ClassesPage() {
+    const [classes, setClasses] = useState<ApiClass[]>(STATIC_CLASSES);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('/api/classes?limit=20')
+            .then(r => r.json())
+            .then(d => { if (d.success && d.data.length > 0) setClasses(d.data) })
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
+
     return (
         <main className="min-h-screen bg-gradient-to-b from-cyan-100 via-blue-50 to-indigo-100" dir="rtl">
             <Navbar />
@@ -232,36 +231,57 @@ export default function ClassesPage() {
                         انضم للحصة المباشرة عبر Microsoft Teams
                     </p>
 
+                    {loading ? (
+                        <div className="flex justify-center py-20">
+                            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                        </div>
+                    ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {virtualClasses.map((classItem, index) => (
+                        {classes.map((classItem, index) => {
+                            const bgColor = BG_COLORS[index % BG_COLORS.length];
+                            const gradColor = GRADIENT_COLORS[index % GRADIENT_COLORS.length];
+                            return (
                             <motion.div
-                                key={classItem.id}
+                                key={classItem._id}
                                 initial={{ opacity: 0, y: 50 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
                                 whileHover={{ scale: 1.05, rotate: -2 }}
                                 className="relative group"
                             >
-                                <div className={`${classItem.bgColor} rounded-3xl p-8 border-4 border-blue-400 shadow-xl hover:shadow-2xl transition-all`}>
-                                    <div className={`w-20 h-20 bg-gradient-to-br ${classItem.color} rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform`}>
-                                        <classItem.icon className="w-10 h-10 text-white" />
+                                <div className={`${bgColor} rounded-3xl p-8 border-4 border-blue-400 shadow-xl hover:shadow-2xl transition-all`}>
+                                    <div className={`w-20 h-20 bg-gradient-to-br ${gradColor} rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform`}>
+                                        {classItem.icon ? (
+                                            <span className="text-4xl">{classItem.icon}</span>
+                                        ) : (
+                                            <MonitorPlay className="w-10 h-10 text-white" />
+                                        )}
                                     </div>
 
-                                    <h3 className="text-3xl font-black text-gray-800 mb-3">{classItem.title}</h3>
-                                    <p className="text-lg text-gray-600 leading-relaxed mb-6">{classItem.description}</p>
+                                    <h3 className="text-3xl font-black text-gray-800 mb-1">{classItem.title}</h3>
+                                    <p className="text-sm font-bold text-blue-600 mb-1">{classItem.subject} — الصف {classItem.grade}</p>
+                                    <p className="text-sm text-gray-500 mb-2">👤 {classItem.teacher}</p>
+                                    {classItem.day && classItem.time && (
+                                        <p className="text-sm text-gray-500 mb-2">📅 {classItem.day} — {classItem.time}</p>
+                                    )}
+                                    {classItem.description && (
+                                        <p className="text-lg text-gray-600 leading-relaxed mb-4">{classItem.description}</p>
+                                    )}
 
                                     <a
                                         href={classItem.teamsLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-full font-bold hover:from-blue-600 hover:to-cyan-700 transition-all shadow-lg active:scale-95"
+                                        className={`inline-block px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
                                     >
                                         انضم للحصة عبر Teams 🎥
                                     </a>
                                 </div>
                             </motion.div>
-                        ))}
+                            );
+                        })}
                     </div>
+                    )}
                 </div>
             </section>
 
