@@ -54,7 +54,12 @@ export default function PPTUploader({ value, onChange }: Props) {
 
     // Extract src="..." from full <iframe> embed code
     const srcMatch = raw.match(/src=["']([^"']+)["']/i)
-    if (srcMatch) raw = srcMatch[1].replace(/&amp;/g, '&')
+    if (srcMatch) {
+      raw = srcMatch[1].replace(/&amp;/g, '&')
+    } else if (!raw.startsWith('http')) {
+      setError('تعذّر استخراج الرابط — تأكد من نسخ كود iframe كاملاً')
+      return
+    }
 
     setError(null)
     onChange(raw)

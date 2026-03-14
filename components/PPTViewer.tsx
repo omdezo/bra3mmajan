@@ -15,29 +15,39 @@ export default function PPTViewer({ url, title }: Props) {
   const [loaded, setLoaded] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
 
-  const isPDF = /\.pdf$/i.test(url)
+  // If the stored value is a full <iframe> HTML string, extract the src from it
+  const cleanUrl = (() => {
+    const trimmed = url.trim()
+    if (trimmed.startsWith('<')) {
+      const m = trimmed.match(/src=["']([^"']+)["']/i)
+      return m ? m[1].replace(/&amp;/g, '&') : url
+    }
+    return url
+  })()
+
+  const isPDF = /\.pdf$/i.test(cleanUrl)
 
   useEffect(() => {
     setLoaded(false)
     setResolvedSrc(null)
 
     if (isPDF) {
-      setResolvedSrc(url)
+      setResolvedSrc(cleanUrl)
       return
     }
 
-    if (SHORT_URL_PATTERN.test(url)) {
+    if (SHORT_URL_PATTERN.test(cleanUrl)) {
       // Resolve short/redirect URLs server-side so the iframe gets the actual embed URL
       setResolving(true)
-      fetch(`/api/resolve-url?url=${encodeURIComponent(url)}`)
+      fetch(`/api/resolve-url?url=${encodeURIComponent(cleanUrl)}`)
         .then(r => r.json())
-        .then(d => setResolvedSrc(d.finalUrl ?? url))
-        .catch(() => setResolvedSrc(url))
+        .then(d => setResolvedSrc(d.finalUrl ?? cleanUrl))
+        .catch(() => setResolvedSrc(cleanUrl))
         .finally(() => setResolving(false))
     } else {
-      setResolvedSrc(url)
+      setResolvedSrc(cleanUrl)
     }
-  }, [url, isPDF])
+  }, [cleanUrl, isPDF])
 
   const header = (
     <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-amber-700 to-orange-700 shrink-0">
