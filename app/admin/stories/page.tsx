@@ -13,6 +13,7 @@ interface Story {
   category: string
   icon: string
   color: string
+  coverImage?: string
   readTime: number
   isActive: boolean
   isComingSoon: boolean
@@ -23,7 +24,8 @@ interface Story {
 const EMPTY: Omit<Story, '_id'> = {
   title: '', description: '', content: '',
   category: 'حكايات عُمانية', icon: '📖', color: '#7C3AED',
-  readTime: 5, isActive: true, isComingSoon: false, isFeatured: false, order: 0,
+  coverImage: '', readTime: 5,
+  isActive: true, isComingSoon: false, isFeatured: false, order: 0,
 }
 
 const CATEGORIES = ['حكايات عُمانية', 'قصص الأنبياء', 'قصص أخلاقية', 'مغامرات مصورة'].map(v => ({ value: v, label: v }))
@@ -96,6 +98,7 @@ export default function StoriesAdminPage() {
           </div>
           <FormField label="الوصف" required><Textarea value={form.description} onChange={e => upd('description', e.target.value)} rows={2} /></FormField>
           <FormField label="محتوى القصة"><Textarea value={form.content} onChange={e => upd('content', e.target.value)} rows={5} placeholder="اكتب القصة هنا..." /></FormField>
+          <FormField label="صورة الغلاف" hint="رابط صورة تظهر بدلاً من الأيقونة"><Input value={form.coverImage} onChange={e => upd('coverImage', e.target.value)} placeholder="https://..." /></FormField>
           <div className="grid grid-cols-3 gap-4">
             <FormField label="الفئة"><Select value={form.category} onChange={e => upd('category', e.target.value)} options={CATEGORIES} /></FormField>
             <FormField label="وقت القراءة (دقائق)"><Input type="number" min={1} value={form.readTime} onChange={e => upd('readTime', +e.target.value)} /></FormField>

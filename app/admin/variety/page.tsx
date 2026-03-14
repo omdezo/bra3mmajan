@@ -7,13 +7,13 @@ import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/F
 
 interface Treasure {
   _id?: string; title: string; description: string; content?: string; category: string
-  icon: string; color: string; imageUrl?: string
+  icon: string; color: string; imageUrl?: string; audioUrl?: string; videoUrl?: string
   isActive: boolean; isComingSoon: boolean; isFeatured: boolean; order: number
 }
 
 const EMPTY: Omit<Treasure, '_id'> = {
   title: '', description: '', content: '', category: 'كنوز عُمانية',
-  icon: '💎', color: '#F59E0B', imageUrl: '',
+  icon: '💎', color: '#F59E0B', imageUrl: '', audioUrl: '', videoUrl: '',
   isActive: true, isComingSoon: false, isFeatured: false, order: 0,
 }
 
@@ -88,6 +88,8 @@ export default function VarietyAdminPage() {
             <FormField label="الأيقونة"><Input value={form.icon} onChange={e => upd('icon', e.target.value)} /></FormField>
             <FormField label="رابط الصورة"><Input value={form.imageUrl} onChange={e => upd('imageUrl', e.target.value)} placeholder="https://..." /></FormField>
           </div>
+          <FormField label="رابط الصوت" hint="MP3 أو رابط مباشر للصوت"><Input value={form.audioUrl} onChange={e => upd('audioUrl', e.target.value)} placeholder="https://..." /></FormField>
+          <FormField label="رابط الفيديو" hint="MP4 أو رابط مباشر للفيديو"><Input value={form.videoUrl} onChange={e => upd('videoUrl', e.target.value)} placeholder="https://..." /></FormField>
           <div className="flex gap-6">
             <Toggle checked={form.isActive} onChange={v => upd('isActive', v)} label="نشط" />
             <Toggle checked={form.isComingSoon} onChange={v => upd('isComingSoon', v)} label="قريباً" />
