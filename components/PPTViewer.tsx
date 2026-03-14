@@ -7,7 +7,9 @@ interface Props {
   title: string
 }
 
-const SHORT_URL_PATTERN = /^https?:\/\/(1drv\.ms|bit\.ly|tinyurl\.com|aka\.ms)/i
+// Only resolve generic shorteners — NOT 1drv.ms/OneDrive since those already carry
+// embed params (em=2, wdAr) that must be preserved for interactive mode
+const SHORT_URL_PATTERN = /^https?:\/\/(bit\.ly|tinyurl\.com|aka\.ms)/i
 
 export default function PPTViewer({ url, title }: Props) {
   const [resolvedSrc, setResolvedSrc] = useState<string | null>(null)
@@ -106,7 +108,7 @@ export default function PPTViewer({ url, title }: Props) {
   }
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-xl flex flex-col" style={{ height: 520 }}>
+    <div className="flex flex-col w-full h-full">
       {header}
       {body}
     </div>

@@ -195,8 +195,30 @@ export default function VarietyPage() {
         </div>
       </section>
 
-      {/* Detail Modal */}
-      {selected && (
+      {/* Fullscreen PPT Viewer — opens when item has pptUrl only */}
+      {selected && selected.pptUrl && !selected.videoUrl && !selected.audioUrl && !selected.content && (
+        <motion.div
+          className="fixed inset-0 z-50 flex flex-col bg-slate-950"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-amber-700 to-orange-700 shrink-0">
+            <h3 className="text-white font-bold text-lg truncate">{selected.title}</h3>
+            <button
+              onClick={() => setSelected(null)}
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold transition shrink-0"
+            >
+              ✕ إغلاق
+            </button>
+          </div>
+          <div className="flex-1 min-h-0">
+            <PPTViewer url={selected.pptUrl} title={selected.title} />
+          </div>
+        </motion.div>
+      )}
+
+      {/* Detail Modal — for items with video / audio / text content */}
+      {selected && !selected.pptUrl && (
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
           initial={{ opacity: 0 }}
@@ -218,15 +240,9 @@ export default function VarietyPage() {
               </button>
               <h3 className="text-3xl font-black text-amber-900">{selected.title}</h3>
             </div>
-
             {selected.imageUrl && (
               <div className="relative w-full h-56 rounded-2xl overflow-hidden mb-6">
                 <Image src={selected.imageUrl} alt={selected.title} fill className="object-cover" />
-              </div>
-            )}
-            {selected.pptUrl && (
-              <div className="mb-6 rounded-2xl overflow-hidden">
-                <PPTViewer url={selected.pptUrl} title={selected.title} />
               </div>
             )}
             {selected.videoUrl && (
