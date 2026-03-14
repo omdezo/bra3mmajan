@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Rubik } from "next/font/google";
+import { Rubik, Amiri_Quran } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ImagePreloader } from "@/components/ImagePreloader";
@@ -7,6 +7,12 @@ import { ImagePreloader } from "@/components/ImagePreloader";
 const rubik = Rubik({
   subsets: ["arabic"],
   variable: "--font-rubik",
+});
+
+const amiriQuran = Amiri_Quran({
+  weight: "400",
+  subsets: ["arabic"],
+  variable: "--font-amiri-quran",
 });
 
 export const metadata: Metadata = {
@@ -45,7 +51,8 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased overflow-x-hidden",
-          rubik.variable
+          rubik.variable,
+          amiriQuran.variable
         )}
       >
         <ImagePreloader />

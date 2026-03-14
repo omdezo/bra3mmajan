@@ -82,7 +82,7 @@ function Reader({
             <div className="absolute -inset-3 border border-amber-400/30 rounded-2xl" />
             <div className="absolute -inset-5 border border-amber-400/10 rounded-3xl" />
             <div className="relative px-10 py-4">
-              <p className="text-amber-300 text-4xl font-black mb-1">سورة {surah.name}</p>
+              <p className="text-amber-300 text-4xl font-black mb-1" style={{ fontFamily: 'var(--font-amiri-quran), serif' }}>سورة {surah.name}</p>
               <div className="flex items-center justify-center gap-3 text-sm">
                 <span className={`px-2.5 py-0.5 rounded-full font-bold ${
                   surah.type === 'مكية' ? 'bg-amber-500/20 text-amber-300' : 'bg-sky-500/20 text-sky-300'
@@ -102,7 +102,10 @@ function Reader({
         </div>
 
         {/* Bismillah */}
-        <p className="text-center text-amber-300 text-3xl font-bold leading-loose mb-8">
+        <p
+          className="text-center text-amber-300 text-3xl font-bold leading-loose mb-8"
+          style={{ fontFamily: 'var(--font-amiri-quran), serif' }}
+        >
           بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
         </p>
 
@@ -115,9 +118,9 @@ function Reader({
         {/* Flowing verses */}
         <div className="bg-gradient-to-br from-black/30 to-black/10 border border-white/10 rounded-3xl p-6 md:p-10">
           <p
-            className="text-white text-[1.45rem] leading-[3.6rem] text-right"
+            className="text-white text-[1.55rem] leading-[4rem] text-right"
             dir="rtl"
-            style={{ fontFamily: 'var(--font-rubik), serif' }}
+            style={{ fontFamily: 'var(--font-amiri-quran), serif' }}
           >
             {verses.map(({ verse, num }) => (
               <span key={num}>
