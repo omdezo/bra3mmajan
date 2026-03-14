@@ -47,12 +47,17 @@ export default function PPTUploader({ value, onChange }: Props) {
     }
   }
 
-  /* ── Save embed URL ── */
+  /* ── Save embed URL — accepts full <iframe> code or plain URL ── */
   const saveEmbed = () => {
-    const url = draft.trim()
-    if (!url) { setError('أدخل رابط التضمين'); return }
+    let raw = draft.trim()
+    if (!raw) { setError('أدخل كود التضمين أو الرابط'); return }
+
+    // Extract src="..." from full <iframe> embed code
+    const srcMatch = raw.match(/src=["']([^"']+)["']/i)
+    if (srcMatch) raw = srcMatch[1].replace(/&amp;/g, '&')
+
     setError(null)
-    onChange(url)
+    onChange(raw)
   }
 
   const fileName = value ? decodeURIComponent(value.split('/').pop() ?? 'file') : null
@@ -105,18 +110,18 @@ export default function PPTUploader({ value, onChange }: Props) {
         /* ── OneDrive embed URL ── */
         <div className="space-y-3 bg-slate-800/40 border border-white/10 rounded-xl p-4">
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-xs text-blue-300 leading-relaxed space-y-1">
-            <p className="font-bold text-blue-200">كيفية الحصول على رابط التضمين من OneDrive:</p>
-            <p>١. ارفع ملف PPTX على OneDrive</p>
-            <p>٢. افتح الملف ← اضغط على <strong>مشاركة</strong></p>
-            <p>٣. اختر <strong>تضمين</strong> ← انسخ الرابط الكامل</p>
+            <p className="font-bold text-blue-200">كيفية الحصول على كود التضمين من SharePoint / OneDrive:</p>
+            <p>١. افتح الملف في SharePoint أو OneDrive</p>
+            <p>٢. اضغط <strong>File → Share → Embed</strong></p>
+            <p>٣. انسخ كود الـ iframe كاملاً والصقه هنا</p>
           </div>
           <div className="flex gap-2">
-            <input
-              type="text"
+            <textarea
               value={draft}
               onChange={e => setDraft(e.target.value)}
-              placeholder="https://onedrive.live.com/embed?..."
-              className="flex-1 bg-slate-700 border border-white/10 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500"
+              placeholder={'<iframe src="https://nuosat-my.sharepoint.com/..." ...></iframe>'}
+              className="flex-1 bg-slate-700 border border-white/10 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 resize-none"
+              rows={3}
               dir="ltr"
             />
             <button
