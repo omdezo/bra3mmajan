@@ -18,6 +18,10 @@ import { successResponse, errorResponse } from '@/lib/api'
 
 const SEED_SECRET = process.env.SEED_SECRET ?? 'baraem_seed_2024'
 
+export async function GET(req: NextRequest) {
+  return POST(req)
+}
+
 export async function POST(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   if (searchParams.get('secret') !== SEED_SECRET) {
