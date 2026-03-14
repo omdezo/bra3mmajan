@@ -19,8 +19,8 @@ export default function PPTUploader({ value, onChange }: Props) {
     const ok = /\.(ppt|pptx|pdf|key)$/i.test(file.name)
     if (!ok) { setError('يرجى رفع ملف PowerPoint أو PDF'); return }
 
-    const maxMB = 100
-    if (file.size > maxMB * 1024 * 1024) { setError(`الحجم الأقصى ${maxMB} MB`); return }
+    const maxGB = 1
+    if (file.size > maxGB * 1024 * 1024 * 1024) { setError(`الحجم الأقصى ${maxGB} GB`); return }
 
     setError(null)
     setUploading(true)
@@ -141,7 +141,7 @@ export default function PPTUploader({ value, onChange }: Props) {
               <p className="text-white text-sm font-semibold">
                 {dragging ? 'أفلت الملف هنا' : 'اسحب ملف العرض التقديمي أو اضغط للاختيار'}
               </p>
-              <p className="text-slate-400 text-xs">.pptx · .ppt · .pdf · .key — حتى 100 MB</p>
+              <p className="text-slate-400 text-xs">.pptx · .ppt · .pdf · .key — حتى 1 GB</p>
             </div>
           )}
         </div>
