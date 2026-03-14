@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Tv, Music, BookOpen, Clapperboard } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { VisitorCounter } from "@/components/VisitorCounter";
 import { useState, useEffect } from "react";
@@ -18,26 +17,28 @@ interface ApiVideo {
   youtubeId?: string;
   videoUrl?: string;
   thumbnailUrl?: string;
+  duration?: number;
   isComingSoon: boolean;
+  isFeatured?: boolean;
 }
 
-const CATEGORY_ICONS: Record<string, React.ElementType> = {
-  'رسوم متحركة': Clapperboard,
-  'أناشيد': Music,
-  'فيديوهات تعليمية': BookOpen,
-  'برامج أطفال': Tv,
+const CATEGORY_COLORS: Record<string, string> = {
+  'رسوم متحركة': 'from-purple-500 to-purple-700',
+  'أناشيد': 'from-pink-500 to-pink-700',
+  'فيديوهات تعليمية': 'from-blue-500 to-blue-700',
+  'برامج أطفال': 'from-green-500 to-green-700',
 };
 
-const BG_COLORS = [
-  "bg-purple-100", "bg-pink-100", "bg-blue-100", "bg-green-100",
-  "bg-yellow-100", "bg-indigo-100", "bg-red-100", "bg-orange-100",
-];
+const CATEGORY_BADGE: Record<string, string> = {
+  'رسوم متحركة': 'bg-purple-100 text-purple-700',
+  'أناشيد': 'bg-pink-100 text-pink-700',
+  'فيديوهات تعليمية': 'bg-blue-100 text-blue-700',
+  'برامج أطفال': 'bg-green-100 text-green-700',
+};
 
-const GRADIENT_COLORS = [
-  "from-purple-500 to-purple-700", "from-pink-500 to-pink-700",
-  "from-blue-500 to-blue-700", "from-green-500 to-green-700",
-  "from-yellow-500 to-yellow-700", "from-indigo-500 to-indigo-700",
-];
+function ytThumb(id: string) {
+  return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+}
 
 const STATIC_VIDEOS: ApiVideo[] = [
   { _id: '1', title: "كرتون مغامرات براعم مجان", icon: "🎬", description: "شاهد أجمل المغامرات مع أبطال براعم مجان", category: "رسوم متحركة", color: "#8B5CF6", isComingSoon: true },
@@ -61,7 +62,8 @@ export default function WatchPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-pink-900" dir="rtl">
       <Navbar />
-      {/* Hero Section */}
+
+      {/* Hero */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           {[...Array(20)].map((_, i) => (
@@ -77,8 +79,7 @@ export default function WatchPage() {
 
         <div className="max-w-6xl mx-auto relative z-10">
           <Link href="/#watch" className="inline-flex items-center gap-2 text-pink-300 font-bold mb-6 hover:gap-4 transition-all">
-            <span>→</span>
-            <span>العودة للرئيسية</span>
+            <span>→</span><span>العودة للرئيسية</span>
           </Link>
 
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -122,7 +123,7 @@ export default function WatchPage() {
         </div>
       </section>
 
-      {/* Content Grid */}
+      {/* Video Grid */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-black text-center text-pink-300 mb-12">اختر ما تحب مشاهدته</h2>
@@ -132,66 +133,119 @@ export default function WatchPage() {
               <div className="w-16 h-16 border-4 border-pink-400 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {videos.map((video, index) => {
-                const IconComponent = CATEGORY_ICONS[video.category] ?? Tv;
-                const bgColor = BG_COLORS[index % BG_COLORS.length];
-                const gradColor = GRADIENT_COLORS[index % GRADIENT_COLORS.length];
+                const thumb = video.thumbnailUrl || (video.youtubeId ? ytThumb(video.youtubeId) : '');
+                const gradColor = CATEGORY_COLORS[video.category] ?? 'from-purple-500 to-purple-700';
+                const badgeColor = CATEGORY_BADGE[video.category] ?? 'bg-purple-100 text-purple-700';
+                const isYoutube = !!video.youtubeId;
+                const watchUrl = video.youtubeId
+                  ? `https://www.youtube.com/watch?v=${video.youtubeId}`
+                  : video.videoUrl;
+
                 return (
                   <motion.div
                     key={video._id}
-                    initial={{ opacity: 0, y: 50 }}
+                    initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05, rotate: -2 }}
-                    className="relative group"
+                    transition={{ delay: index * 0.08 }}
+                    className="rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group"
                   >
-                    <div className={`${bgColor} rounded-3xl p-8 border-4 border-purple-400 shadow-xl hover:shadow-2xl transition-all`}>
-                      <div className={`w-20 h-20 bg-gradient-to-br ${gradColor} rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform`}>
-                        {video.icon ? (
-                          <span className="text-4xl">{video.icon}</span>
-                        ) : (
-                          <IconComponent className="w-10 h-10 text-white" />
-                        )}
-                      </div>
-
-                      <h3 className="text-3xl font-black text-gray-800 mb-3">{video.title}</h3>
-                      <p className="text-sm font-bold text-purple-600 mb-2">{video.category}</p>
-                      <p className="text-lg text-gray-600 leading-relaxed mb-6">{video.description}</p>
-
-                      {video.isComingSoon ? (
-                        <button disabled className="px-6 py-3 bg-gray-300 text-gray-500 rounded-full font-bold cursor-not-allowed shadow-lg">
-                          قريباً 🚀
-                        </button>
-                      ) : video.youtubeId ? (
-                        <a
-                          href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-block px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
-                        >
-                          شاهد على يوتيوب ▶
-                        </a>
-                      ) : video.videoUrl ? (
-                        <a
-                          href={video.videoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-block px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
-                        >
-                          شاهد الآن ▶
-                        </a>
+                    {/* Thumbnail */}
+                    <div className="relative aspect-video overflow-hidden bg-slate-800">
+                      {thumb ? (
+                        <img
+                          src={thumb}
+                          alt={video.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
                       ) : (
-                        <button className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}>
-                          شاهد الآن
-                        </button>
-                      )}
-
-                      {video.isComingSoon && (
-                        <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-black text-sm border-2 border-yellow-600">
-                          قريباً
+                        <div className={`w-full h-full bg-gradient-to-br ${gradColor} flex items-center justify-center`}>
+                          <span className="text-7xl drop-shadow-lg">{video.icon}</span>
                         </div>
                       )}
+
+                      {/* Dark overlay + play button */}
+                      {!video.isComingSoon && watchUrl && (
+                        <a
+                          href={watchUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all duration-300"
+                        >
+                          <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-2xl">
+                            <span className="text-purple-700 text-2xl mr-[-3px]">▶</span>
+                          </div>
+                        </a>
+                      )}
+
+                      {/* Coming soon overlay */}
+                      {video.isComingSoon && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <div className="bg-yellow-400 text-yellow-900 px-5 py-2.5 rounded-full font-black text-lg border-2 border-yellow-600 shadow-lg">
+                            قريباً 🚀
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Source badge */}
+                      {!video.isComingSoon && (
+                        <div className="absolute top-2 right-2">
+                          {isYoutube ? (
+                            <div className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow">
+                              <span>▶</span><span>YouTube</span>
+                            </div>
+                          ) : video.videoUrl ? (
+                            <div className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow">
+                              <span>🗂️</span><span>Drive</span>
+                            </div>
+                          ) : null}
+                        </div>
+                      )}
+
+                      {/* Duration badge */}
+                      {video.duration && video.duration > 0 && !video.isComingSoon && (
+                        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-md">
+                          ⏱ {video.duration} دقيقة
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Info */}
+                    <div className="bg-white p-4">
+                      <div className="flex items-start gap-2 mb-2">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${badgeColor}`}>
+                          {video.category}
+                        </span>
+                        {video.isFeatured && (
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 flex-shrink-0">
+                            ⭐ مميز
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-lg font-black text-gray-800 mb-1 leading-snug">{video.title}</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{video.description}</p>
+
+                      <div className="mt-4">
+                        {video.isComingSoon ? (
+                          <button disabled className="w-full px-4 py-2.5 bg-gray-200 text-gray-400 rounded-xl font-bold cursor-not-allowed text-sm">
+                            قريباً 🚀
+                          </button>
+                        ) : watchUrl ? (
+                          <a
+                            href={watchUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`block w-full text-center px-4 py-2.5 bg-gradient-to-r ${gradColor} text-white rounded-xl font-bold hover:shadow-lg hover:scale-105 transition-all text-sm`}
+                          >
+                            {isYoutube ? '▶ شاهد على YouTube' : '▶ شاهد الآن'}
+                          </a>
+                        ) : (
+                          <button disabled className="w-full px-4 py-2.5 bg-gray-200 text-gray-400 rounded-xl font-bold cursor-not-allowed text-sm">
+                            غير متاح
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 );
