@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Palette, Castle, Music, GraduationCap } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { VisitorCounter } from "@/components/VisitorCounter";
-import PPTViewer from "@/components/PPTViewer";
 import { useState, useEffect } from "react";
 
 interface ApiTreasure {
@@ -168,12 +167,21 @@ export default function VarietyPage() {
                         <button disabled className="px-6 py-3 bg-gray-300 text-gray-500 rounded-full font-bold cursor-not-allowed">
                           قريباً 🚀
                         </button>
-                      ) : (item.content || item.videoUrl || item.audioUrl || item.pptUrl) ? (
+                      ) : item.pptUrl ? (
+                        <a
+                          href={item.pptUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-block px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
+                        >
+                          📊 افتح العرض
+                        </a>
+                      ) : (item.content || item.videoUrl || item.audioUrl) ? (
                         <button
                           onClick={() => setSelected(item)}
                           className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
                         >
-                          {item.pptUrl ? '📊 عرض' : item.videoUrl ? '🎥 شاهد' : item.audioUrl ? '🔊 استمع' : '✨ استكشف'}
+                          {item.videoUrl ? '🎥 شاهد' : item.audioUrl ? '🔊 استمع' : '✨ استكشف'}
                         </button>
                       ) : (
                         <button className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}>
@@ -195,30 +203,8 @@ export default function VarietyPage() {
         </div>
       </section>
 
-      {/* Fullscreen PPT Viewer — opens when item has pptUrl only */}
-      {selected && selected.pptUrl && !selected.videoUrl && !selected.audioUrl && !selected.content && (
-        <motion.div
-          className="fixed inset-0 z-50 flex flex-col bg-slate-950"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-amber-700 to-orange-700 shrink-0">
-            <h3 className="text-white font-bold text-lg truncate">{selected.title}</h3>
-            <button
-              onClick={() => setSelected(null)}
-              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold transition shrink-0"
-            >
-              ✕ إغلاق
-            </button>
-          </div>
-          <div className="flex-1 min-h-0">
-            <PPTViewer url={selected.pptUrl} title={selected.title} />
-          </div>
-        </motion.div>
-      )}
-
-      {/* Detail Modal — for items with video / audio / text content */}
-      {selected && !selected.pptUrl && (
+      {/* Detail Modal */}
+      {selected && (
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
           initial={{ opacity: 0 }}
