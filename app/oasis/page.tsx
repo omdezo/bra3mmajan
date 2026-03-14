@@ -7,8 +7,6 @@ import { Book, Heart, Sun, Moon } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { VisitorCounter } from "@/components/VisitorCounter";
 import { useState, useEffect } from "react";
-import JuzAmmaSection from "@/components/oasis/JuzAmmaSection";
-import AdhkarSection from "@/components/oasis/AdhkarSection";
 
 interface ApiOasis {
   _id: string;
@@ -256,11 +254,111 @@ export default function OasisPage() {
         </motion.div>
       )}
 
-      {/* Juz Amma Section — lazy loaded */}
-      <JuzAmmaSection />
+      {/* Navigation Cards */}
+      <section className="py-16 px-4 bg-gradient-to-b from-transparent to-black/20">
+        <div className="max-w-4xl mx-auto">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl font-black text-center text-green-300 mb-10"
+          >
+            ابدأ رحلتك الإسلامية 🌙
+          </motion.h2>
 
-      {/* Adhkar Section — lazy loaded */}
-      <AdhkarSection />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Juz Amma Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              whileHover={{ y: -4 }}
+            >
+              <Link
+                href="/oasis/juz-amma"
+                className="group relative flex flex-col h-full overflow-hidden rounded-3xl border border-amber-400/20 hover:border-amber-400/50 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-950/60 via-emerald-950/80 to-teal-950/60" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(251,191,36,0.08),_transparent_60%)]" />
+
+                <div className="relative z-10 p-8 flex flex-col gap-5">
+                  {/* Icon */}
+                  <div className="w-16 h-16 bg-amber-400/15 border border-amber-400/30 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
+                    📖
+                  </div>
+
+                  <div>
+                    <h3 className="text-3xl font-black text-amber-300 mb-2">جزء عمّ</h3>
+                    <p className="text-green-200/80 leading-relaxed">
+                      اقرأ سور جزء عم كاملةً بتنسيق مصحفي جميل مع ترقيم الآيات وتمييز كل سورة
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <span className="bg-amber-400/15 text-amber-300 text-sm font-bold px-3 py-1 rounded-full border border-amber-400/20">
+                      ٣٧ سورة
+                    </span>
+                    <span className="bg-amber-400/15 text-amber-300 text-sm font-bold px-3 py-1 rounded-full border border-amber-400/20">
+                      من النبأ إلى الناس
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-amber-400 font-bold mt-auto group-hover:gap-3 transition-all">
+                    <span>ابدأ القراءة</span>
+                    <span>←</span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Adhkar Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -4 }}
+            >
+              <Link
+                href="/oasis/adhkar"
+                className="group relative flex flex-col h-full overflow-hidden rounded-3xl border border-green-400/20 hover:border-green-400/50 transition-all duration-300 hover:shadow-2xl hover:shadow-green-900/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-green-950/60 via-emerald-950/80 to-teal-950/60" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(74,222,128,0.07),_transparent_60%)]" />
+
+                <div className="relative z-10 p-8 flex flex-col gap-5">
+                  {/* Icon */}
+                  <div className="w-16 h-16 bg-green-400/15 border border-green-400/30 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
+                    🤲
+                  </div>
+
+                  <div>
+                    <h3 className="text-3xl font-black text-green-300 mb-2">الأذكار</h3>
+                    <p className="text-green-200/80 leading-relaxed">
+                      أذكار الصباح والمساء والنوم وبعد الصلاة وأدعية يومية من السنة النبوية الشريفة
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <span className="bg-green-400/15 text-green-300 text-sm font-bold px-3 py-1 rounded-full border border-green-400/20">
+                      ٥ أقسام
+                    </span>
+                    <span className="bg-green-400/15 text-green-300 text-sm font-bold px-3 py-1 rounded-full border border-green-400/20">
+                      أحاديث صحيحة
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-green-400 font-bold mt-auto group-hover:gap-3 transition-all">
+                    <span>اعرض الأذكار</span>
+                    <span>←</span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* Character Section */}
       <section className="py-16 px-4 bg-gradient-to-b from-green-900/50 to-teal-900/50">
