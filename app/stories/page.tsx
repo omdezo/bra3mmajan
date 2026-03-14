@@ -16,8 +16,9 @@ interface ApiStory {
   icon: string;
   color: string;
   coverImage?: string;
-  content?: string;
+  link?: string;
   isComingSoon: boolean;
+  isFeatured?: boolean;
   readTime?: number;
 }
 
@@ -28,16 +29,19 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   'مغامرات مصورة': Lightbulb,
 };
 
-const BG_COLORS = [
-  "bg-amber-100", "bg-green-100", "bg-pink-100", "bg-purple-100",
-  "bg-blue-100", "bg-yellow-100", "bg-indigo-100", "bg-red-100",
-];
+const CATEGORY_COLORS: Record<string, string> = {
+  'حكايات عُمانية': 'from-amber-500 to-amber-700',
+  'قصص الأنبياء': 'from-green-500 to-green-700',
+  'قصص أخلاقية': 'from-pink-500 to-pink-700',
+  'مغامرات مصورة': 'from-purple-500 to-purple-700',
+};
 
-const GRADIENT_COLORS = [
-  "from-amber-500 to-amber-700", "from-green-500 to-green-700",
-  "from-pink-500 to-pink-700", "from-purple-500 to-purple-700",
-  "from-blue-500 to-blue-700", "from-yellow-500 to-yellow-700",
-];
+const CATEGORY_BADGE: Record<string, string> = {
+  'حكايات عُمانية': 'bg-amber-100 text-amber-700',
+  'قصص الأنبياء': 'bg-green-100 text-green-700',
+  'قصص أخلاقية': 'bg-pink-100 text-pink-700',
+  'مغامرات مصورة': 'bg-purple-100 text-purple-700',
+};
 
 const STATIC_STORIES: ApiStory[] = [
   { _id: '1', title: "حكايات عُمانية قديمة", icon: "🌍", description: "قصص من التراث العُماني الأصيل", category: "حكايات عُمانية", color: "#F59E0B", isComingSoon: true },
@@ -49,7 +53,6 @@ const STATIC_STORIES: ApiStory[] = [
 export default function StoriesPage() {
   const [stories, setStories] = useState<ApiStory[]>(STATIC_STORIES);
   const [loading, setLoading] = useState(true);
-  const [selectedStory, setSelectedStory] = useState<ApiStory | null>(null);
 
   useEffect(() => {
     fetch('/api/stories?limit=20')
@@ -62,7 +65,8 @@ export default function StoriesPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-indigo-950 via-purple-900 to-indigo-900" dir="rtl">
       <Navbar />
-      {/* Hero Section */}
+
+      {/* Hero */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0">
           {[...Array(15)].map((_, i) => (
@@ -78,8 +82,7 @@ export default function StoriesPage() {
 
         <div className="max-w-6xl mx-auto relative z-10">
           <Link href="/#stories" className="inline-flex items-center gap-2 text-yellow-300 font-bold mb-6 hover:gap-4 transition-all">
-            <span>→</span>
-            <span>العودة للرئيسية</span>
+            <span>→</span><span>العودة للرئيسية</span>
           </Link>
 
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -133,63 +136,111 @@ export default function StoriesPage() {
               <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {stories.map((story, index) => {
                 const IconComponent = CATEGORY_ICONS[story.category] ?? BookOpen;
-                const bgColor = BG_COLORS[index % BG_COLORS.length];
-                const gradColor = GRADIENT_COLORS[index % GRADIENT_COLORS.length];
+                const gradColor = CATEGORY_COLORS[story.category] ?? 'from-amber-500 to-amber-700';
+                const badgeColor = CATEGORY_BADGE[story.category] ?? 'bg-amber-100 text-amber-700';
+                const hasLink = !story.isComingSoon && !!story.link;
+
                 return (
                   <motion.div
                     key={story._id}
-                    initial={{ opacity: 0, y: 50 }}
+                    initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05, rotate: 2 }}
-                    className="relative group"
+                    transition={{ delay: index * 0.08 }}
+                    className="rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group"
                   >
-                    <div className={`${bgColor} rounded-3xl p-8 border-4 border-yellow-400 shadow-xl hover:shadow-2xl transition-all`}>
+                    {/* Cover Image */}
+                    <div className="relative aspect-video overflow-hidden bg-slate-800">
                       {story.coverImage ? (
-                        <div className="relative w-full h-40 rounded-2xl overflow-hidden mb-6">
-                          <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
-                        </div>
+                        <img
+                          src={story.coverImage}
+                          alt={story.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
                       ) : (
-                        <div className={`w-20 h-20 bg-gradient-to-br ${gradColor} rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform`}>
+                        <div className={`w-full h-full bg-gradient-to-br ${gradColor} flex items-center justify-center`}>
                           {story.icon ? (
-                            <span className="text-4xl">{story.icon}</span>
+                            <span className="text-7xl drop-shadow-lg">{story.icon}</span>
                           ) : (
-                            <IconComponent className="w-10 h-10 text-white" />
+                            <IconComponent className="w-20 h-20 text-white/80" />
                           )}
                         </div>
                       )}
 
-                      <h3 className="text-3xl font-black text-gray-800 mb-2">{story.title}</h3>
-                      <p className="text-sm font-bold text-indigo-600 mb-2">{story.category}</p>
-                      {story.readTime && (
-                        <p className="text-sm text-gray-500 mb-2">⏱ {story.readTime} دقائق للقراءة</p>
+                      {/* Hover overlay with read arrow */}
+                      {hasLink && (
+                        <a
+                          href={story.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all duration-300"
+                        >
+                          <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-2xl">
+                            <BookOpen className="w-7 h-7 text-indigo-700" />
+                          </div>
+                        </a>
                       )}
-                      <p className="text-lg text-gray-600 leading-relaxed mb-6">{story.description}</p>
+
+                      {/* Coming soon overlay */}
+                      {story.isComingSoon && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <div className="bg-yellow-400 text-yellow-900 px-5 py-2.5 rounded-full font-black text-lg border-2 border-yellow-600 shadow-lg">
+                            قريباً 🚀
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Read time badge */}
+                      {story.readTime && story.readTime > 0 && !story.isComingSoon && (
+                        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-md">
+                          ⏱ {story.readTime} دقائق
+                        </div>
+                      )}
+
+                      {/* Featured badge */}
+                      {story.isFeatured && (
+                        <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-md">
+                          ⭐ مميزة
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Info */}
+                    <div className="bg-white p-4">
+                      <div className="mb-2">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
+                          {story.category}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-black text-gray-800 mb-1 leading-snug">{story.title}</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4">{story.description}</p>
 
                       {story.isComingSoon ? (
-                        <button disabled className="px-6 py-3 bg-gray-300 text-gray-500 rounded-full font-bold cursor-not-allowed">
+                        <button
+                          disabled
+                          className="w-full px-4 py-2.5 bg-gray-200 text-gray-400 rounded-xl font-bold cursor-not-allowed text-sm"
+                        >
                           قريباً 🚀
                         </button>
-                      ) : story.content ? (
-                        <button
-                          onClick={() => setSelectedStory(story)}
-                          className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
+                      ) : hasLink ? (
+                        <a
+                          href={story.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-gradient-to-r ${gradColor} text-white rounded-xl font-bold hover:shadow-lg hover:scale-105 transition-all text-sm`}
                         >
-                          اقرأ الآن 📖
-                        </button>
+                          <BookOpen className="w-4 h-4" />
+                          <span>اقرأ الآن</span>
+                        </a>
                       ) : (
-                        <button className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}>
-                          اقرأ الآن
-                        </button>
-                      )}
-
-                      {story.isComingSoon && (
-                        <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-black text-sm border-2 border-yellow-600">
+                        <button
+                          disabled
+                          className="w-full px-4 py-2.5 bg-gray-200 text-gray-400 rounded-xl font-bold cursor-not-allowed text-sm"
+                        >
                           قريباً
-                        </div>
+                        </button>
                       )}
                     </div>
                   </motion.div>
@@ -199,36 +250,6 @@ export default function StoriesPage() {
           )}
         </div>
       </section>
-
-      {/* Story Reader Modal */}
-      {selectedStory && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          onClick={() => setSelectedStory(null)}
-        >
-          <motion.div
-            className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-3xl border-8 border-yellow-500 shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-8"
-            initial={{ scale: 0.8, y: 50 }}
-            animate={{ scale: 1, y: 0 }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-start mb-6">
-              <button
-                onClick={() => setSelectedStory(null)}
-                className="px-4 py-2 bg-red-500 text-white rounded-full font-bold hover:bg-red-600"
-              >
-                ✕ إغلاق
-              </button>
-              <h3 className="text-3xl font-black text-amber-900">{selectedStory.title}</h3>
-            </div>
-            <div className="prose prose-lg max-w-none text-right text-gray-800 leading-relaxed whitespace-pre-wrap">
-              {selectedStory.content}
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
 
       {/* Character Section */}
       <section className="py-16 px-4 bg-gradient-to-b from-yellow-900/30 to-indigo-900/50">

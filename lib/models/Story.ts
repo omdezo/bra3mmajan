@@ -1,5 +1,5 @@
 /**
- * Story Model - Manages stories and story categories
+ * Story Model - Each story is a link to an external/internal resource
  */
 import mongoose, { Document, Schema, Model } from 'mongoose'
 
@@ -8,12 +8,11 @@ export type StoryCategory = 'حكايات عُمانية' | 'قصص الأنبي
 export interface IStory extends Document {
   title: string
   description: string
-  content: string
+  link?: string
   category: StoryCategory
   coverImage?: string
   icon: string
   color: string
-  ageGroup: string
   readTime: number
   isActive: boolean
   isComingSoon: boolean
@@ -27,7 +26,7 @@ const StorySchema = new Schema<IStory>(
   {
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
-    content: { type: String, default: '' },
+    link: { type: String },
     category: {
       type: String,
       enum: ['حكايات عُمانية', 'قصص الأنبياء', 'قصص أخلاقية', 'مغامرات مصورة'],
@@ -36,7 +35,6 @@ const StorySchema = new Schema<IStory>(
     coverImage: { type: String },
     icon: { type: String, default: '📖' },
     color: { type: String, default: '#7C3AED' },
-    ageGroup: { type: String, default: '1-4' },
     readTime: { type: Number, default: 5 },
     isActive: { type: Boolean, default: true },
     isComingSoon: { type: Boolean, default: false },
