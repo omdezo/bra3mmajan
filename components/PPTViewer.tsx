@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Props {
@@ -7,15 +7,37 @@ interface Props {
   title: string
 }
 
+const SHORT_URL_PATTERN = /^https?:\/\/(1drv\.ms|bit\.ly|tinyurl\.com|aka\.ms)/i
+
 export default function PPTViewer({ url, title }: Props) {
+  const [resolvedSrc, setResolvedSrc] = useState<string | null>(null)
+  const [resolving, setResolving] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
 
-  // If it's an R2 PDF → display directly; otherwise embed as-is (OneDrive/any embed URL)
   const isPDF = /\.pdf$/i.test(url)
-  const src = isPDF
-    ? url
-    : url // OneDrive embed URL used directly
+
+  useEffect(() => {
+    setLoaded(false)
+    setResolvedSrc(null)
+
+    if (isPDF) {
+      setResolvedSrc(url)
+      return
+    }
+
+    if (SHORT_URL_PATTERN.test(url)) {
+      // Resolve short/redirect URLs server-side so the iframe gets the actual embed URL
+      setResolving(true)
+      fetch(`/api/resolve-url?url=${encodeURIComponent(url)}`)
+        .then(r => r.json())
+        .then(d => setResolvedSrc(d.finalUrl ?? url))
+        .catch(() => setResolvedSrc(url))
+        .finally(() => setResolving(false))
+    } else {
+      setResolvedSrc(url)
+    }
+  }, [url, isPDF])
 
   const header = (
     <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-amber-700 to-orange-700 shrink-0">
@@ -33,22 +55,27 @@ export default function PPTViewer({ url, title }: Props) {
     </div>
   )
 
-  const iframe = (
+  const body = (
     <div className="relative flex-1">
-      {!loaded && (
+      {(!loaded || resolving) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 z-10 gap-3">
           <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-white/70 text-sm">جاري تحميل العرض…</p>
+          <p className="text-white/70 text-sm">
+            {resolving ? 'جاري تحميل الرابط…' : 'جاري تحميل العرض…'}
+          </p>
         </div>
       )}
-      <iframe
-        key={src}
-        src={src}
-        className="w-full h-full border-0"
-        title={title}
-        onLoad={() => setLoaded(true)}
-        allowFullScreen
-      />
+      {resolvedSrc && (
+        <iframe
+          key={resolvedSrc}
+          src={resolvedSrc}
+          className="w-full h-full border-0"
+          title={title}
+          onLoad={() => setLoaded(true)}
+          allowFullScreen
+          allow="fullscreen"
+        />
+      )}
     </div>
   )
 
@@ -62,7 +89,7 @@ export default function PPTViewer({ url, title }: Props) {
           exit={{ opacity: 0 }}
         >
           {header}
-          {iframe}
+          {body}
         </motion.div>
       </AnimatePresence>
     )
@@ -71,7 +98,7 @@ export default function PPTViewer({ url, title }: Props) {
   return (
     <div className="rounded-2xl overflow-hidden border border-white/10 shadow-xl flex flex-col" style={{ height: 520 }}>
       {header}
-      {iframe}
+      {body}
     </div>
   )
 }
