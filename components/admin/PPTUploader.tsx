@@ -10,6 +10,7 @@ const ACCEPTED = '.ppt,.pptx,.pdf,.key'
 
 export default function PPTUploader({ value, onChange }: Props) {
   const [uploading, setUploading] = useState(false)
+  const [converting, setConverting] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -36,7 +37,7 @@ export default function PPTUploader({ value, onChange }: Props) {
       if (!res.ok) throw new Error('Presign failed')
       const { presignedUrl, publicUrl } = await res.json()
 
-      // 2. Upload directly to R2 (track progress)
+      // 2. Upload directly to R2
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest()
         xhr.upload.onprogress = (e) => {
@@ -49,12 +50,40 @@ export default function PPTUploader({ value, onChange }: Props) {
         xhr.send(file)
       })
 
-      onChange(publicUrl)
+      setUploading(false)
+
+      // 3. Convert PPT → PDF for reliable viewing (PDFs skip this step)
+      const isPDF = /\.pdf$/i.test(file.name)
+      if (!isPDF) {
+        setConverting(true)
+        try {
+          const convertRes = await fetch('/api/convert-ppt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pptUrl: publicUrl }),
+          })
+          const convertData = await convertRes.json()
+          if (convertRes.ok && convertData.pdfUrl) {
+            onChange(convertData.pdfUrl)
+          } else {
+            // Fall back to original PPT URL
+            onChange(publicUrl)
+            setError(convertData.error ?? 'فشل التحويل — سيتم عرض الملف مباشرة')
+          }
+        } catch {
+          onChange(publicUrl)
+          setError('فشل التحويل — سيتم عرض الملف مباشرة')
+        } finally {
+          setConverting(false)
+        }
+      } else {
+        onChange(publicUrl)
+      }
     } catch (e) {
       console.error(e)
       setError('فشل الرفع — تأكد من إعداد R2 وإضافة متغيرات البيئة')
-    } finally {
       setUploading(false)
+    } finally {
       setProgress(0)
     }
   }
@@ -66,16 +95,12 @@ export default function PPTUploader({ value, onChange }: Props) {
     if (f) upload(f)
   }
 
-  const fileSizeLabel = (bytes: number) =>
-    bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(0)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`
-
-  // Derive display filename from URL
   const fileName = value ? decodeURIComponent(value.split('/').pop() ?? 'file') : null
+  const busy = uploading || converting
 
   return (
     <div className="space-y-2">
       {value ? (
-        /* ── Existing file ── */
         <div className="flex items-center gap-3 bg-slate-800/60 border border-white/10 rounded-xl px-4 py-3">
           <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center shrink-0">
             <span className="text-xl">📊</span>
@@ -84,34 +109,23 @@ export default function PPTUploader({ value, onChange }: Props) {
             <p className="text-white text-sm font-semibold truncate">{fileName}</p>
             <p className="text-slate-400 text-xs">عرض تقديمي مرفق</p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <a
-              href={value}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-2.5 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-xs font-bold transition"
-            >
-              معاينة
-            </a>
-            <button
-              onClick={() => onChange(undefined)}
-              className="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-bold transition"
-            >
-              حذف
-            </button>
-          </div>
+          <button
+            onClick={() => onChange(undefined)}
+            className="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-bold transition shrink-0"
+          >
+            حذف
+          </button>
         </div>
       ) : (
-        /* ── Upload zone ── */
         <div
           className={`relative border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 ${
-            uploading
+            busy
               ? 'border-amber-400/60 bg-amber-400/5 cursor-wait'
               : dragging
               ? 'border-amber-400 bg-amber-400/10 scale-[1.01]'
               : 'border-white/15 hover:border-amber-400/50 hover:bg-white/5'
           }`}
-          onClick={() => !uploading && inputRef.current?.click()}
+          onClick={() => !busy && inputRef.current?.click()}
           onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
           onDragLeave={() => setDragging(false)}
           onDrop={onDrop}
@@ -135,6 +149,12 @@ export default function PPTUploader({ value, onChange }: Props) {
                 />
               </div>
             </div>
+          ) : converting ? (
+            <div className="space-y-3">
+              <div className="w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className="text-white text-sm font-medium">جاري تحويل الملف إلى PDF…</p>
+              <p className="text-slate-400 text-xs">قد يستغرق هذا دقيقة أو أكثر حسب حجم الملف</p>
+            </div>
           ) : (
             <div className="space-y-2">
               <div className="text-4xl">📊</div>
@@ -142,6 +162,7 @@ export default function PPTUploader({ value, onChange }: Props) {
                 {dragging ? 'أفلت الملف هنا' : 'اسحب ملف العرض التقديمي أو اضغط للاختيار'}
               </p>
               <p className="text-slate-400 text-xs">.pptx · .ppt · .pdf · .key — حتى 1 GB</p>
+              <p className="text-slate-500 text-xs">سيتم تحويل PPT/PPTX تلقائياً إلى PDF للعرض</p>
             </div>
           )}
         </div>
