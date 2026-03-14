@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Palette, Castle, Music, GraduationCap } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { VisitorCounter } from "@/components/VisitorCounter";
+import PPTViewer from "@/components/PPTViewer";
 import { useState, useEffect } from "react";
 
 interface ApiTreasure {
@@ -18,6 +19,7 @@ interface ApiTreasure {
   imageUrl?: string;
   videoUrl?: string;
   audioUrl?: string;
+  pptUrl?: string;
   content?: string;
   isComingSoon: boolean;
 }
@@ -166,12 +168,12 @@ export default function VarietyPage() {
                         <button disabled className="px-6 py-3 bg-gray-300 text-gray-500 rounded-full font-bold cursor-not-allowed">
                           قريباً 🚀
                         </button>
-                      ) : (item.content || item.videoUrl || item.audioUrl) ? (
+                      ) : (item.content || item.videoUrl || item.audioUrl || item.pptUrl) ? (
                         <button
                           onClick={() => setSelected(item)}
                           className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
                         >
-                          {item.videoUrl ? '🎥 شاهد' : item.audioUrl ? '🔊 استمع' : '✨ استكشف'}
+                          {item.pptUrl ? '📊 عرض' : item.videoUrl ? '🎥 شاهد' : item.audioUrl ? '🔊 استمع' : '✨ استكشف'}
                         </button>
                       ) : (
                         <button className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}>
@@ -220,6 +222,11 @@ export default function VarietyPage() {
             {selected.imageUrl && (
               <div className="relative w-full h-56 rounded-2xl overflow-hidden mb-6">
                 <Image src={selected.imageUrl} alt={selected.title} fill className="object-cover" />
+              </div>
+            )}
+            {selected.pptUrl && (
+              <div className="mb-6 rounded-2xl overflow-hidden">
+                <PPTViewer url={selected.pptUrl} title={selected.title} />
               </div>
             )}
             {selected.videoUrl && (

@@ -15,6 +15,7 @@ export interface ITreasure extends Document {
   imageUrl?: string
   audioUrl?: string
   videoUrl?: string
+  pptUrl?: string
   isActive: boolean
   isComingSoon: boolean
   isFeatured: boolean
@@ -38,6 +39,7 @@ const TreasureSchema = new Schema<ITreasure>(
     imageUrl: { type: String },
     audioUrl: { type: String },
     videoUrl: { type: String },
+    pptUrl: { type: String },
     isActive: { type: Boolean, default: true },
     isComingSoon: { type: Boolean, default: false },
     isFeatured: { type: Boolean, default: false },
