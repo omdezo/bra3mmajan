@@ -7,6 +7,8 @@ import { Book, Heart, Sun, Moon } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { VisitorCounter } from "@/components/VisitorCounter";
 import { useState, useEffect } from "react";
+import JuzAmmaSection from "@/components/oasis/JuzAmmaSection";
+import AdhkarSection from "@/components/oasis/AdhkarSection";
 
 interface ApiOasis {
   _id: string;
@@ -253,6 +255,12 @@ export default function OasisPage() {
           </motion.div>
         </motion.div>
       )}
+
+      {/* Juz Amma Section — lazy loaded */}
+      <JuzAmmaSection />
+
+      {/* Adhkar Section — lazy loaded */}
+      <AdhkarSection />
 
       {/* Character Section */}
       <section className="py-16 px-4 bg-gradient-to-b from-green-900/50 to-teal-900/50">
