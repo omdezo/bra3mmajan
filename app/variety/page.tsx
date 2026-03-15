@@ -48,6 +48,9 @@ const STATIC_TREASURES: ApiTreasure[] = [
   { _id: '4', title: "تقنيات التعليم", icon: "🎓", description: "شروحات للمنهج العُماني، تمارين تفاعلية، مراجعات", category: "أساليب تعليمية", color: "#3B82F6", isComingSoon: true },
 ];
 
+const isEmbeddable = (url: string) =>
+  url.includes('canva.com') || url.includes('drive.google.com');
+
 const isCanva = (url: string) => url.includes('canva.com');
 
 export default function VarietyPage() {
@@ -169,12 +172,12 @@ export default function VarietyPage() {
                         <button disabled className="px-6 py-3 bg-gray-300 text-gray-500 rounded-full font-bold cursor-not-allowed">
                           قريباً 🚀
                         </button>
-                      ) : item.pptUrl && isCanva(item.pptUrl) ? (
+                      ) : item.pptUrl && isEmbeddable(item.pptUrl) ? (
                         <button
                           onClick={() => setSelected(item)}
                           className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
                         >
-                          🎨 افتح العرض
+                          {isCanva(item.pptUrl) ? '🎨' : '📁'} افتح العرض
                         </button>
                       ) : item.pptUrl ? (
                         <a
@@ -236,10 +239,16 @@ export default function VarietyPage() {
               <h3 className="text-3xl font-black text-amber-900">{selected.title}</h3>
             </div>
 
-            {/* Canva embed — 16:9 responsive */}
-            {selected.pptUrl && isCanva(selected.pptUrl) && (
-              <div className="rounded-2xl overflow-hidden mb-6 shadow-xl border-4 border-amber-300"
-                style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+            {/* Embedded viewer — Canva (16:9) or Google Drive PDF (A4-ish) */}
+            {selected.pptUrl && isEmbeddable(selected.pptUrl) && (
+              <div
+                className="rounded-2xl overflow-hidden mb-6 shadow-xl border-4 border-amber-300"
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  paddingTop: isCanva(selected.pptUrl) ? '56.25%' : '75%',
+                }}
+              >
                 <iframe
                   loading="lazy"
                   style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
@@ -268,16 +277,20 @@ export default function VarietyPage() {
               </div>
             )}
 
-            {/* Open in Canva link */}
-            {selected.pptUrl && isCanva(selected.pptUrl) && (
+            {/* Open externally */}
+            {selected.pptUrl && isEmbeddable(selected.pptUrl) && (
               <a
-                href={selected.pptUrl.replace('?embed', '')}
+                href={
+                  isCanva(selected.pptUrl)
+                    ? selected.pptUrl.replace('?embed', '')
+                    : selected.pptUrl.replace('/preview', '/view')
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex items-center gap-2 text-amber-700 hover:text-amber-900 font-bold text-sm transition"
               >
                 <span>🔗</span>
-                <span>فتح في Canva</span>
+                <span>{isCanva(selected.pptUrl) ? 'فتح في Canva' : 'فتح في Google Drive'}</span>
               </a>
             )}
           </motion.div>

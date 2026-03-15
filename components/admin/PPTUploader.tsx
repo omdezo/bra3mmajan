@@ -6,6 +6,19 @@ interface Props {
   onChange: (url: string | undefined) => void
 }
 
+/** Convert any Google Drive sharing URL to the embeddable /preview URL */
+function normalizeGoogleDrive(url: string): string {
+  // https://drive.google.com/file/d/FILE_ID/view?... → /preview
+  const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^/?#]+)/)
+  if (fileMatch) return `https://drive.google.com/file/d/${fileMatch[1]}/preview`
+
+  // https://drive.google.com/open?id=FILE_ID
+  const openMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/)
+  if (openMatch) return `https://drive.google.com/file/d/${openMatch[1]}/preview`
+
+  return url
+}
+
 function extractUrl(raw: string): { url: string; error?: string } {
   const trimmed = raw.trim()
   if (!trimmed) return { url: '' }
@@ -17,12 +30,18 @@ function extractUrl(raw: string): { url: string; error?: string } {
     return { url: m[1].replace(/&amp;/g, '&') }
   }
 
+  // Normalize Google Drive links
+  if (trimmed.includes('drive.google.com')) {
+    return { url: normalizeGoogleDrive(trimmed) }
+  }
+
   return { url: trimmed }
 }
 
 function detectSource(url: string): { label: string; icon: string; color: string } {
   if (url.includes('canva.com')) return { label: 'Canva', icon: '🎨', color: 'text-pink-400' }
-  if (url.includes('1drv.ms') || url.includes('onedrive')) return { label: 'OneDrive', icon: '☁️', color: 'text-blue-400' }
+  if (url.includes('drive.google.com')) return { label: 'Google Drive PDF', icon: '📁', color: 'text-blue-400' }
+  if (url.includes('1drv.ms') || url.includes('onedrive')) return { label: 'OneDrive', icon: '☁️', color: 'text-sky-400' }
   if (url.includes('docs.google.com')) return { label: 'Google Slides', icon: '📑', color: 'text-green-400' }
   if (/\.pdf$/i.test(url)) return { label: 'PDF', icon: '📄', color: 'text-red-400' }
   return { label: 'رابط', icon: '🔗', color: 'text-slate-400' }
@@ -67,14 +86,14 @@ export default function PPTUploader({ value, onChange }: Props) {
       <textarea
         value={draft}
         onChange={e => { setDraft(e.target.value); setError('') }}
-        placeholder={'الصق الرابط المباشر أو كود التضمين كاملاً من Canva / PowerPoint...\n\nمثال: https://www.canva.com/...\nأو الصق كود <iframe> كاملاً'}
+        placeholder={'الصق الرابط المباشر أو كود التضمين...\n\n• Canva: https://www.canva.com/...\n• Google Drive PDF: https://drive.google.com/file/d/.../view\n• أو الصق كود <iframe> كاملاً'}
         rows={4}
         className="w-full bg-slate-700 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500 resize-none font-mono"
         dir="ltr"
       />
 
-      {/* Live preview of detected source */}
-      {draft.trim() && !error && (
+      {/* Live preview */}
+      {draft.trim() && (
         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs ${preview.error ? 'bg-red-500/10 text-red-400' : 'bg-slate-800/60 text-slate-300'}`}>
           {preview.error ? (
             <><span>⚠️</span><span>{preview.error}</span></>

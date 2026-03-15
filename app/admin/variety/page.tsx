@@ -27,7 +27,7 @@ const columns: Column<Treasure>[] = [
     <div>
       <div className="font-medium text-white flex items-center gap-2">
         {String(v)}
-        {row.pptUrl && <span title="عرض تقديمي" className="text-amber-400 text-xs">{row.pptUrl.includes('canva.com') ? '🎨' : '📊'}</span>}
+        {row.pptUrl && <span title="عرض تقديمي" className="text-amber-400 text-xs">{row.pptUrl.includes('canva.com') ? '🎨' : row.pptUrl.includes('drive.google.com') ? '📁' : '📊'}</span>}
       </div>
       <div className="text-xs text-slate-400">{row.category}</div>
     </div>
