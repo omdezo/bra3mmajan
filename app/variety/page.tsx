@@ -53,6 +53,15 @@ const isEmbeddable = (url: string) =>
 
 const isCanva = (url: string) => url.includes('canva.com');
 
+const isGoogleDrive = (url: string) => url.includes('drive.google.com');
+
+/** Route the Drive URL through our proxy so the browser sees our domain (no X-Frame-Options block) */
+function driveProxyUrl(url: string): string {
+  const m = url.match(/drive\.google\.com\/file\/d\/([^/?#]+)/);
+  if (m) return `/api/proxy-pdf?id=${m[1]}`;
+  return url;
+}
+
 export default function VarietyPage() {
   const [items, setItems] = useState<ApiTreasure[]>(STATIC_TREASURES);
   const [loading, setLoading] = useState(true);
@@ -239,20 +248,20 @@ export default function VarietyPage() {
               <h3 className="text-3xl font-black text-amber-900">{selected.title}</h3>
             </div>
 
-            {/* Embedded viewer — Canva (16:9) or Google Drive PDF (A4-ish) */}
+            {/* Embedded viewer — Canva (16:9) or Google Drive PDF via proxy */}
             {selected.pptUrl && isEmbeddable(selected.pptUrl) && (
               <div
                 className="rounded-2xl overflow-hidden mb-6 shadow-xl border-4 border-amber-300"
                 style={{
                   position: 'relative',
                   width: '100%',
-                  paddingTop: isCanva(selected.pptUrl) ? '56.25%' : '75%',
+                  paddingTop: isCanva(selected.pptUrl) ? '56.25%' : '130%',
                 }}
               >
                 <iframe
                   loading="lazy"
                   style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                  src={selected.pptUrl}
+                  src={isGoogleDrive(selected.pptUrl) ? driveProxyUrl(selected.pptUrl) : selected.pptUrl}
                   allowFullScreen
                   allow="fullscreen"
                   title={selected.title}
