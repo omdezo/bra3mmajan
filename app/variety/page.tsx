@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Palette, Castle, Music, GraduationCap } from "lucide-react";
@@ -48,24 +48,78 @@ const STATIC_TREASURES: ApiTreasure[] = [
   { _id: '4', title: "تقنيات التعليم", icon: "🎓", description: "شروحات للمنهج العُماني، تمارين تفاعلية، مراجعات", category: "أساليب تعليمية", color: "#3B82F6", isComingSoon: true },
 ];
 
-const isEmbeddable = (url: string) =>
-  url.includes('canva.com') || url.includes('drive.google.com');
+const isCanva      = (url: string) => url.includes('canva.com');
+const isGDrive     = (url: string) => url.includes('drive.google.com');
 
-const isCanva = (url: string) => url.includes('canva.com');
-
-const isGoogleDrive = (url: string) => url.includes('drive.google.com');
-
-/** Route the Drive URL through our proxy so the browser sees our domain (no X-Frame-Options block) */
-function driveProxyUrl(url: string): string {
+function gDriveProxyUrl(url: string): string {
   const m = url.match(/drive\.google\.com\/file\/d\/([^/?#]+)/);
-  if (m) return `/api/proxy-pdf?id=${m[1]}`;
-  return url;
+  return m ? `/api/proxy-pdf?id=${m[1]}` : url;
 }
 
+function gDriveViewUrl(url: string): string {
+  return url.replace('/preview', '/view');
+}
+
+/* ── Full-screen PDF viewer (Google Drive) ───────────────────── */
+function PDFFullscreen({ item, onClose }: { item: ApiTreasure; onClose: () => void }) {
+  const proxyUrl = gDriveProxyUrl(item.pptUrl!);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[100] flex flex-col bg-gray-950"
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 40 }}
+      transition={{ duration: 0.2 }}
+    >
+      {/* Toolbar */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-700 to-orange-700 shrink-0 shadow-lg">
+        <button
+          onClick={onClose}
+          className="flex items-center gap-1.5 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-black text-sm transition active:scale-95 shrink-0"
+        >
+          ✕ إغلاق
+        </button>
+
+        <div className="flex-1 min-w-0 text-center">
+          <p className="text-white font-black text-base truncate">📄 {item.title}</p>
+        </div>
+
+        <a
+          href={gDriveViewUrl(item.pptUrl!)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold text-sm transition shrink-0"
+        >
+          🔗 Drive
+        </a>
+      </div>
+
+      {/* PDF viewer — <embed> uses the browser's native PDF renderer, no download */}
+      <div className="flex-1 relative bg-gray-900">
+        {/* Loading backdrop */}
+        <div className="absolute inset-0 flex items-center justify-center z-0">
+          <div className="flex flex-col items-center gap-3 text-white/50">
+            <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm">جاري تحميل الملف…</p>
+          </div>
+        </div>
+        <embed
+          src={proxyUrl}
+          type="application/pdf"
+          className="absolute inset-0 w-full h-full z-10"
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Main page ───────────────────────────────────────────────── */
 export default function VarietyPage() {
-  const [items, setItems] = useState<ApiTreasure[]>(STATIC_TREASURES);
+  const [items, setItems]     = useState<ApiTreasure[]>(STATIC_TREASURES);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<ApiTreasure | null>(null);
+  const [modal, setModal]     = useState<ApiTreasure | null>(null);   // Canva / video / audio
+  const [pdfItem, setPdfItem] = useState<ApiTreasure | null>(null);   // Google Drive PDF fullscreen
 
   useEffect(() => {
     fetch('/api/variety?limit=20')
@@ -78,7 +132,8 @@ export default function VarietyPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-amber-100 via-amber-50 to-yellow-50" dir="rtl">
       <Navbar />
-      {/* Hero Section */}
+
+      {/* ── Hero ── */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0" style={{
@@ -89,8 +144,7 @@ export default function VarietyPage() {
 
         <div className="max-w-6xl mx-auto relative z-10">
           <Link href="/#variety" className="inline-flex items-center gap-2 text-amber-700 font-bold mb-6 hover:gap-4 transition-all">
-            <span>→</span>
-            <span>العودة للرئيسية</span>
+            <span>→</span><span>العودة للرئيسية</span>
           </Link>
 
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -104,27 +158,16 @@ export default function VarietyPage() {
             </motion.div>
 
             <div className="flex-1 text-center md:text-right">
-              <motion.h1
-                className="text-5xl md:text-7xl font-black text-amber-700 mb-4"
-                initial={{ opacity: 0, y: -50 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
+              <motion.h1 className="text-5xl md:text-7xl font-black text-amber-700 mb-4"
+                initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }}>
                 🦌 قسم المنوعات
               </motion.h1>
-              <motion.p
-                className="text-2xl md:text-3xl text-amber-600 font-bold mb-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
+              <motion.p className="text-2xl md:text-3xl text-amber-600 font-bold mb-6"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
                 مع مَها - المهاة الرشيقة
               </motion.p>
-              <motion.p
-                className="text-lg md:text-xl text-gray-700 leading-relaxed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
+              <motion.p className="text-lg md:text-xl text-gray-700 leading-relaxed"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
                 أنشطة إضافية ومحتوى ثري يكمل تجربة التعلم!
                 <br />
                 <span className="text-amber-700 font-bold">اكتشف كنوز عُمان مع مها! 🎨</span>
@@ -134,7 +177,7 @@ export default function VarietyPage() {
         </div>
       </section>
 
-      {/* Content Grid */}
+      {/* ── Grid ── */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-black text-center text-amber-700 mb-12">اختر نشاطك المفضل</h2>
@@ -147,13 +190,12 @@ export default function VarietyPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {items.map((item, index) => {
                 const IconComponent = CATEGORY_ICONS[item.category] ?? Palette;
-                const bgColor = BG_COLORS[index % BG_COLORS.length];
+                const bgColor   = BG_COLORS[index % BG_COLORS.length];
                 const gradColor = GRADIENT_COLORS[index % GRADIENT_COLORS.length];
+
                 return (
-                  <motion.div
-                    key={item._id}
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
+                  <motion.div key={item._id}
+                    initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.05, rotate: -2 }}
                     className="relative group"
@@ -165,11 +207,9 @@ export default function VarietyPage() {
                         </div>
                       ) : (
                         <div className={`w-20 h-20 bg-gradient-to-br ${gradColor} rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform`}>
-                          {item.icon ? (
-                            <span className="text-4xl">{item.icon}</span>
-                          ) : (
-                            <IconComponent className="w-10 h-10 text-white" />
-                          )}
+                          {item.icon
+                            ? <span className="text-4xl">{item.icon}</span>
+                            : <IconComponent className="w-10 h-10 text-white" />}
                         </div>
                       )}
 
@@ -177,31 +217,33 @@ export default function VarietyPage() {
                       <p className="text-sm font-bold text-amber-700 mb-3">{item.category}</p>
                       <p className="text-lg text-gray-600 leading-relaxed mb-6">{item.description}</p>
 
+                      {/* Action button */}
                       {item.isComingSoon ? (
                         <button disabled className="px-6 py-3 bg-gray-300 text-gray-500 rounded-full font-bold cursor-not-allowed">
                           قريباً 🚀
                         </button>
-                      ) : item.pptUrl && isEmbeddable(item.pptUrl) ? (
+                      ) : item.pptUrl && isGDrive(item.pptUrl) ? (
                         <button
-                          onClick={() => setSelected(item)}
+                          onClick={() => setPdfItem(item)}
                           className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
                         >
-                          {isCanva(item.pptUrl) ? '🎨' : '📁'} افتح العرض
+                          📄 افتح الملف
+                        </button>
+                      ) : item.pptUrl && isCanva(item.pptUrl) ? (
+                        <button
+                          onClick={() => setModal(item)}
+                          className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
+                        >
+                          🎨 افتح العرض
                         </button>
                       ) : item.pptUrl ? (
-                        <a
-                          href={item.pptUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-block px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
-                        >
+                        <a href={item.pptUrl} target="_blank" rel="noopener noreferrer"
+                          className={`inline-block px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}>
                           📊 افتح العرض
                         </a>
                       ) : (item.content || item.videoUrl || item.audioUrl) ? (
-                        <button
-                          onClick={() => setSelected(item)}
-                          className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
-                        >
+                        <button onClick={() => setModal(item)}
+                          className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}>
                           {item.videoUrl ? '🎥 شاهد' : item.audioUrl ? '🔊 استمع' : '✨ استكشف'}
                         </button>
                       ) : (
@@ -224,98 +266,78 @@ export default function VarietyPage() {
         </div>
       </section>
 
-      {/* Detail Modal */}
-      {selected && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          onClick={() => setSelected(null)}
-        >
+      {/* ── Google Drive PDF fullscreen viewer ── */}
+      <AnimatePresence>
+        {pdfItem && (
+          <PDFFullscreen item={pdfItem} onClose={() => setPdfItem(null)} />
+        )}
+      </AnimatePresence>
+
+      {/* ── Canva / video / audio modal ── */}
+      <AnimatePresence>
+        {modal && (
           <motion.div
-            className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-3xl border-8 border-amber-400 shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8"
-            initial={{ scale: 0.8, y: 50 }}
-            animate={{ scale: 1, y: 0 }}
-            onClick={e => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setModal(null)}
           >
-            <div className="flex justify-between items-start mb-6">
-              <button
-                onClick={() => setSelected(null)}
-                className="px-4 py-2 bg-red-500 text-white rounded-full font-bold hover:bg-red-600"
-              >
-                ✕ إغلاق
-              </button>
-              <h3 className="text-3xl font-black text-amber-900">{selected.title}</h3>
-            </div>
-
-            {/* Embedded viewer — Canva (16:9) or Google Drive PDF via proxy */}
-            {selected.pptUrl && isEmbeddable(selected.pptUrl) && (
-              <div
-                className="rounded-2xl overflow-hidden mb-6 shadow-xl border-4 border-amber-300"
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  paddingTop: isCanva(selected.pptUrl) ? '56.25%' : '130%',
-                }}
-              >
-                <iframe
-                  loading="lazy"
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                  src={isGoogleDrive(selected.pptUrl) ? driveProxyUrl(selected.pptUrl) : selected.pptUrl}
-                  allowFullScreen
-                  allow="fullscreen"
-                  title={selected.title}
-                />
+            <motion.div
+              className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-3xl border-8 border-amber-400 shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8"
+              initial={{ scale: 0.8, y: 50 }} animate={{ scale: 1, y: 0 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-start mb-6">
+                <button onClick={() => setModal(null)}
+                  className="px-4 py-2 bg-red-500 text-white rounded-full font-bold hover:bg-red-600">
+                  ✕ إغلاق
+                </button>
+                <h3 className="text-3xl font-black text-amber-900">{modal.title}</h3>
               </div>
-            )}
 
-            {selected.imageUrl && !selected.pptUrl && (
-              <div className="relative w-full h-56 rounded-2xl overflow-hidden mb-6">
-                <Image src={selected.imageUrl} alt={selected.title} fill className="object-cover" />
-              </div>
-            )}
-            {selected.videoUrl && (
-              <video controls className="w-full rounded-2xl mb-6" src={selected.videoUrl} />
-            )}
-            {selected.audioUrl && (
-              <audio controls className="w-full mb-6" src={selected.audioUrl} />
-            )}
-            {selected.content && (
-              <div className="prose max-w-none text-right text-gray-800 leading-relaxed whitespace-pre-wrap">
-                {selected.content}
-              </div>
-            )}
+              {/* Canva embed — 16:9 */}
+              {modal.pptUrl && isCanva(modal.pptUrl) && (
+                <div className="rounded-2xl overflow-hidden mb-6 shadow-xl border-4 border-amber-300"
+                  style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+                  <iframe
+                    loading="lazy"
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                    src={modal.pptUrl}
+                    allowFullScreen allow="fullscreen"
+                    title={modal.title}
+                  />
+                </div>
+              )}
 
-            {/* Open externally */}
-            {selected.pptUrl && isEmbeddable(selected.pptUrl) && (
-              <a
-                href={
-                  isCanva(selected.pptUrl)
-                    ? selected.pptUrl.replace('?embed', '')
-                    : selected.pptUrl.replace('/preview', '/view')
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-2 text-amber-700 hover:text-amber-900 font-bold text-sm transition"
-              >
-                <span>🔗</span>
-                <span>{isCanva(selected.pptUrl) ? 'فتح في Canva' : 'فتح في Google Drive'}</span>
-              </a>
-            )}
+              {modal.imageUrl && !modal.pptUrl && (
+                <div className="relative w-full h-56 rounded-2xl overflow-hidden mb-6">
+                  <Image src={modal.imageUrl} alt={modal.title} fill className="object-cover" />
+                </div>
+              )}
+              {modal.videoUrl && <video controls className="w-full rounded-2xl mb-6" src={modal.videoUrl} />}
+              {modal.audioUrl && <audio controls className="w-full mb-6" src={modal.audioUrl} />}
+              {modal.content && (
+                <div className="prose max-w-none text-right text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {modal.content}
+                </div>
+              )}
+
+              {modal.pptUrl && isCanva(modal.pptUrl) && (
+                <a href={modal.pptUrl.replace('?embed', '')} target="_blank" rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 text-amber-700 hover:text-amber-900 font-bold text-sm transition">
+                  <span>🔗</span><span>فتح في Canva</span>
+                </a>
+              )}
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
 
-      {/* Character Section */}
+      {/* ── Character section ── */}
       <section className="py-16 px-4 bg-gradient-to-b from-amber-200 to-amber-100">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring" }}
-            viewport={{ once: true }}
-            className="bg-white rounded-3xl p-8 md:p-12 border-4 border-amber-400 shadow-2xl"
-          >
+          <motion.div initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring" }} viewport={{ once: true }}
+            className="bg-white rounded-3xl p-8 md:p-12 border-4 border-amber-400 shadow-2xl">
             <h2 className="text-4xl font-black text-amber-700 mb-6">عن مَها 🦌</h2>
             <p className="text-xl text-gray-700 leading-relaxed">
               <strong>مها</strong> - المهاة العُمانية، رشيقة ولطيفة، ترمز للجمال العُماني الأصيل، ترشد الأطفال في قسم المنوعات وتقدم لهم الأنشطة المتنوعة بأسلوب محبب!
@@ -324,7 +346,7 @@ export default function VarietyPage() {
         </div>
       </section>
 
-      {/* Visitor Counter */}
+      {/* ── Visitor counter ── */}
       <section className="py-8 px-4 bg-gradient-to-b from-amber-100 to-amber-200">
         <div className="max-w-6xl mx-auto flex justify-center">
           <VisitorCounter pageName="variety" />

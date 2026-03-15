@@ -8,27 +8,32 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Invalid file id', { status: 400 })
   }
 
-  // Google's usercontent domain serves Drive files directly (no X-Frame-Options)
-  const driveUrl = `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`
+  // Use the standard uc?export=download URL — follows redirects and returns raw file bytes
+  const driveUrl = `https://drive.google.com/uc?export=download&id=${fileId}`
 
   try {
     const res = await fetch(driveUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible)' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'application/pdf,*/*',
+      },
       redirect: 'follow',
     })
 
     if (!res.ok) {
-      return new NextResponse('Could not fetch file from Google Drive', { status: 502 })
+      return new NextResponse('Could not fetch file', { status: 502 })
     }
 
-    const ct = res.headers.get('content-type') ?? 'application/pdf'
+    // Buffer fully so we control every response header (no passthrough from Google)
+    const bytes = await res.arrayBuffer()
 
-    // Stream the body directly to avoid buffering the whole file in memory
-    return new NextResponse(res.body, {
+    return new NextResponse(bytes, {
       headers: {
-        'Content-Type': ct.includes('pdf') ? 'application/pdf' : ct,
-        'Content-Disposition': 'inline',
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'inline; filename="document.pdf"',
+        'Content-Length': bytes.byteLength.toString(),
         'Cache-Control': 'public, max-age=3600',
+        'X-Content-Type-Options': 'nosniff',
       },
     })
   } catch {
