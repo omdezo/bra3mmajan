@@ -27,7 +27,7 @@ const columns: Column<Treasure>[] = [
     <div>
       <div className="font-medium text-white flex items-center gap-2">
         {String(v)}
-        {row.pptUrl && <span title="يحتوي عرض تقديمي" className="text-amber-400 text-xs">📊</span>}
+        {row.pptUrl && <span title="عرض تقديمي" className="text-amber-400 text-xs">{row.pptUrl.includes('canva.com') ? '🎨' : '📊'}</span>}
       </div>
       <div className="text-xs text-slate-400">{row.category}</div>
     </div>
@@ -103,7 +103,7 @@ export default function VarietyAdminPage() {
           <div className="border-t border-white/10 pt-4">
             <p className="text-slate-300 text-sm font-semibold mb-3 flex items-center gap-2">
               <span>📊</span>
-              <span>عرض تقديمي (PowerPoint / PDF)</span>
+              <span>عرض تقديمي (Canva / PowerPoint / PDF)</span>
             </p>
             <FormField label="" hint="يُعرض داخل الموقع مباشرةً بدون تحميل">
               <PPTUploader

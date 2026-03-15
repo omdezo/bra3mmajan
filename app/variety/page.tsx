@@ -48,6 +48,8 @@ const STATIC_TREASURES: ApiTreasure[] = [
   { _id: '4', title: "تقنيات التعليم", icon: "🎓", description: "شروحات للمنهج العُماني، تمارين تفاعلية، مراجعات", category: "أساليب تعليمية", color: "#3B82F6", isComingSoon: true },
 ];
 
+const isCanva = (url: string) => url.includes('canva.com');
+
 export default function VarietyPage() {
   const [items, setItems] = useState<ApiTreasure[]>(STATIC_TREASURES);
   const [loading, setLoading] = useState(true);
@@ -167,6 +169,13 @@ export default function VarietyPage() {
                         <button disabled className="px-6 py-3 bg-gray-300 text-gray-500 rounded-full font-bold cursor-not-allowed">
                           قريباً 🚀
                         </button>
+                      ) : item.pptUrl && isCanva(item.pptUrl) ? (
+                        <button
+                          onClick={() => setSelected(item)}
+                          className={`px-6 py-3 bg-gradient-to-r ${gradColor} text-white rounded-full font-bold hover:shadow-lg transition-all active:scale-95`}
+                        >
+                          🎨 افتح العرض
+                        </button>
                       ) : item.pptUrl ? (
                         <a
                           href={item.pptUrl}
@@ -212,7 +221,7 @@ export default function VarietyPage() {
           onClick={() => setSelected(null)}
         >
           <motion.div
-            className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-3xl border-8 border-amber-400 shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-8"
+            className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-3xl border-8 border-amber-400 shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8"
             initial={{ scale: 0.8, y: 50 }}
             animate={{ scale: 1, y: 0 }}
             onClick={e => e.stopPropagation()}
@@ -226,7 +235,23 @@ export default function VarietyPage() {
               </button>
               <h3 className="text-3xl font-black text-amber-900">{selected.title}</h3>
             </div>
-            {selected.imageUrl && (
+
+            {/* Canva embed — 16:9 responsive */}
+            {selected.pptUrl && isCanva(selected.pptUrl) && (
+              <div className="rounded-2xl overflow-hidden mb-6 shadow-xl border-4 border-amber-300"
+                style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+                <iframe
+                  loading="lazy"
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                  src={selected.pptUrl}
+                  allowFullScreen
+                  allow="fullscreen"
+                  title={selected.title}
+                />
+              </div>
+            )}
+
+            {selected.imageUrl && !selected.pptUrl && (
               <div className="relative w-full h-56 rounded-2xl overflow-hidden mb-6">
                 <Image src={selected.imageUrl} alt={selected.title} fill className="object-cover" />
               </div>
@@ -241,6 +266,19 @@ export default function VarietyPage() {
               <div className="prose max-w-none text-right text-gray-800 leading-relaxed whitespace-pre-wrap">
                 {selected.content}
               </div>
+            )}
+
+            {/* Open in Canva link */}
+            {selected.pptUrl && isCanva(selected.pptUrl) && (
+              <a
+                href={selected.pptUrl.replace('?embed', '')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 text-amber-700 hover:text-amber-900 font-bold text-sm transition"
+              >
+                <span>🔗</span>
+                <span>فتح في Canva</span>
+              </a>
             )}
           </motion.div>
         </motion.div>
