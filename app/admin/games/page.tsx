@@ -4,6 +4,8 @@ import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
+import OrderButtons from '@/components/admin/OrderButtons'
+import { useReorder } from '@/lib/hooks/useReorder'
 
 interface Game {
   _id?: string
@@ -32,38 +34,6 @@ const EMPTY: Omit<Game, '_id'> = {
 const CATEGORIES = ['الحساب', 'اللغة العربية', 'الألغاز', 'الذاكرة', 'العلوم', 'التراث'].map(v => ({ value: v, label: v }))
 const DIFFICULTIES = ['سهل', 'متوسط', 'صعب'].map(v => ({ value: v, label: v }))
 
-const columns: Column<Game>[] = [
-  { key: 'icon', label: '', width: '40px', render: (v) => <span className="text-2xl">{String(v)}</span> },
-  { key: 'title', label: 'العنوان', render: (v, row) => (
-    <div>
-      <div className="font-medium text-white">{String(v)}</div>
-      <div className="text-xs text-slate-400">{row.category}</div>
-    </div>
-  )},
-  { key: 'difficulty', label: 'المستوى', render: (v) => (
-    <span className={`px-2 py-0.5 rounded-full text-xs ${
-      v === 'سهل' ? 'bg-green-500/20 text-green-400' :
-      v === 'متوسط' ? 'bg-yellow-500/20 text-yellow-400' :
-      'bg-red-500/20 text-red-400'
-    }`}>{String(v)}</span>
-  )},
-  { key: 'stars', label: 'النجوم', render: (v) => '⭐'.repeat(Number(v)) },
-  { key: 'isExternalLink', label: 'النوع', render: (v, row) => v ? (
-    <a href={row.externalLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-400 hover:underline text-xs">
-      <span>🔗</span><span>خارجي ↗</span>
-    </a>
-  ) : <span className="text-xs text-slate-400">داخلي</span> },
-  { key: 'playersCount', label: 'اللاعبون', render: (v) => <span className="text-slate-300">{Number(v).toLocaleString('ar')}</span> },
-  { key: 'isComingSoon', label: 'الحالة', render: (_, row) => (
-    <span className={`px-2 py-0.5 rounded-full text-xs ${
-      row.isComingSoon ? 'bg-yellow-500/20 text-yellow-400' :
-      row.isActive ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'
-    }`}>
-      {row.isComingSoon ? 'قريباً' : row.isActive ? 'نشط' : 'مخفي'}
-    </span>
-  )},
-]
-
 export default function GamesAdminPage() {
   const [games, setGames] = useState<Game[]>([])
   const [loading, setLoading] = useState(true)
@@ -73,10 +43,7 @@ export default function GamesAdminPage() {
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
 
-  const showToast = (msg: string) => {
-    setToast(msg)
-    setTimeout(() => setToast(null), 3000)
-  }
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
   const loadGames = useCallback(async () => {
     setLoading(true)
@@ -87,6 +54,42 @@ export default function GamesAdminPage() {
   }, [])
 
   useEffect(() => { loadGames() }, [loadGames])
+
+  const { move, movingId } = useReorder(games, loadGames, '/api/games')
+
+  const columns: Column<Game>[] = [
+    {
+      key: 'order', label: '↕', width: '64px',
+      render: (_, row) => (
+        <OrderButtons
+          idx={games.findIndex(i => i._id === row._id)}
+          total={games.length} order={row.order}
+          busy={movingId === row._id}
+          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
+        />
+      ),
+    },
+    { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
+    { key: 'title', label: 'العنوان', render: (v, row) => (
+      <div>
+        <div className="font-medium text-white">{String(v)}</div>
+        <div className="text-xs text-slate-400">{row.category}</div>
+      </div>
+    )},
+    { key: 'difficulty', label: 'المستوى', render: v => (
+      <span className={`px-2 py-0.5 rounded-full text-xs ${v === 'سهل' ? 'bg-green-500/20 text-green-400' : v === 'متوسط' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>{String(v)}</span>
+    )},
+    { key: 'stars', label: 'النجوم', render: v => '⭐'.repeat(Number(v)) },
+    { key: 'isExternalLink', label: 'النوع', render: (v, row) => v ? (
+      <a href={row.externalLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-400 hover:underline text-xs"><span>🔗</span><span>خارجي ↗</span></a>
+    ) : <span className="text-xs text-slate-400">داخلي</span> },
+    { key: 'playersCount', label: 'اللاعبون', render: v => <span className="text-slate-300">{Number(v).toLocaleString('ar')}</span> },
+    { key: 'isComingSoon', label: 'الحالة', render: (_, row) => (
+      <span className={`px-2 py-0.5 rounded-full text-xs ${row.isComingSoon ? 'bg-yellow-500/20 text-yellow-400' : row.isActive ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'}`}>
+        {row.isComingSoon ? 'قريباً' : row.isActive ? 'نشط' : 'مخفي'}
+      </span>
+    )},
+  ]
 
   const openCreate = () => { setForm(EMPTY); setEditId(null); setModalOpen(true) }
   const openEdit = (game: Game) => { setForm({ ...game }); setEditId(game._id ?? null); setModalOpen(true) }

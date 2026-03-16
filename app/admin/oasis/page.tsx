@@ -4,6 +4,8 @@ import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
+import OrderButtons from '@/components/admin/OrderButtons'
+import { useReorder } from '@/lib/hooks/useReorder'
 
 interface OasisItem {
   _id?: string; title: string; arabicText: string; transliteration?: string
@@ -18,23 +20,6 @@ const EMPTY: Omit<OasisItem, '_id'> = {
 }
 
 const CATEGORIES = ['حفظ القرآن', 'أدعية إسلامية', 'أذكار الصباح والمساء', 'آداب إسلامية'].map(v => ({ value: v, label: v }))
-
-const columns: Column<OasisItem>[] = [
-  { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
-  { key: 'title', label: 'العنوان', render: (v, row) => (
-    <div>
-      <div className="font-medium text-white">{String(v)}</div>
-      <div className="text-xs text-slate-400 font-arabic">{row.arabicText.substring(0, 40)}...</div>
-    </div>
-  )},
-  { key: 'category', label: 'الفئة', render: v => <span className="text-xs text-slate-300">{String(v)}</span> },
-  { key: 'isFeatured', label: 'مميز', render: v => v ? '⭐' : '-' },
-  { key: 'isActive', label: 'الحالة', render: (_, row) => (
-    <span className={`px-2 py-0.5 rounded-full text-xs ${row.isActive ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'}`}>
-      {row.isActive ? 'نشط' : 'مخفي'}
-    </span>
-  )},
-]
 
 export default function OasisAdminPage() {
   const [items, setItems] = useState<OasisItem[]>([])
@@ -56,6 +41,36 @@ export default function OasisAdminPage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  const { move, movingId } = useReorder(items, load, '/api/oasis')
+
+  const columns: Column<OasisItem>[] = [
+    {
+      key: 'order', label: '↕', width: '64px',
+      render: (_, row) => (
+        <OrderButtons
+          idx={items.findIndex(i => i._id === row._id)}
+          total={items.length} order={row.order}
+          busy={movingId === row._id}
+          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
+        />
+      ),
+    },
+    { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
+    { key: 'title', label: 'العنوان', render: (v, row) => (
+      <div>
+        <div className="font-medium text-white">{String(v)}</div>
+        <div className="text-xs text-slate-400 font-arabic">{row.arabicText.substring(0, 40)}...</div>
+      </div>
+    )},
+    { key: 'category', label: 'الفئة', render: v => <span className="text-xs text-slate-300">{String(v)}</span> },
+    { key: 'isFeatured', label: 'مميز', render: v => v ? '⭐' : '-' },
+    { key: 'isActive', label: 'الحالة', render: (_, row) => (
+      <span className={`px-2 py-0.5 rounded-full text-xs ${row.isActive ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'}`}>
+        {row.isActive ? 'نشط' : 'مخفي'}
+      </span>
+    )},
+  ]
 
   const handleSave = async () => {
     setSaving(true)

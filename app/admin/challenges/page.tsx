@@ -3,6 +3,8 @@ import { useEffect, useState, useCallback } from 'react'
 import AdminShell from '@/components/admin/AdminShell'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
+import OrderButtons from '@/components/admin/OrderButtons'
+import { useReorder } from '@/lib/hooks/useReorder'
 
 /* ─── Types ─────────────────────────────────────────────────────────── */
 interface Question {
@@ -98,6 +100,8 @@ export default function ChallengesAdminPage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  const { move, movingId } = useReorder(challenges, load, '/api/challenges')
 
   /* ── Challenge CRUD ── */
   const openCreateChallenge = () => { setCForm(EMPTY_CHALLENGE); setCEditId(null); setCModal(true) }
@@ -304,9 +308,17 @@ export default function ChallengesAdminPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {challenges.map(c => (
+              {challenges.map((c, idx) => (
                 <div key={c._id} className="bg-slate-800/50 border border-white/5 rounded-2xl p-4 hover:border-white/10 transition group">
                   <div className="flex items-center gap-4">
+                    <OrderButtons
+                      idx={idx}
+                      total={challenges.length}
+                      order={c.order}
+                      busy={movingId === c._id}
+                      onUp={() => move(c, 'up')}
+                      onDown={() => move(c, 'down')}
+                    />
                     <span className="text-3xl">{c.icon}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">

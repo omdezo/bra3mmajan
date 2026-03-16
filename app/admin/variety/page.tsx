@@ -5,6 +5,8 @@ import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
 import PPTUploader from '@/components/admin/PPTUploader'
+import OrderButtons from '@/components/admin/OrderButtons'
+import { useReorder } from '@/lib/hooks/useReorder'
 
 interface Treasure {
   _id?: string; title: string; description: string; content?: string; category: string
@@ -21,8 +23,6 @@ const EMPTY: Omit<Treasure, '_id'> = {
 
 const CATEGORIES = ['ركن الإبداع', 'كنوز عُمانية', 'أغانٍ', 'أساليب تعليمية'].map(v => ({ value: v, label: v }))
 
-const PUT = (id: string, body: object) =>
-  fetch(`/api/variety/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
 export default function VarietyAdminPage() {
   const [items, setItems]     = useState<Treasure[]>([])
@@ -31,7 +31,6 @@ export default function VarietyAdminPage() {
   const [form, setForm]       = useState<Omit<Treasure, '_id'>>(EMPTY)
   const [editId, setEditId]   = useState<string | null>(null)
   const [saving, setSaving]   = useState(false)
-  const [moving, setMoving]   = useState<string | null>(null)
   const [toast, setToast]     = useState<string | null>(null)
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500) }
@@ -46,50 +45,20 @@ export default function VarietyAdminPage() {
 
   useEffect(() => { load() }, [load])
 
-  /* ── Order swap ──────────────────────────────────────────────── */
-  const handleMove = useCallback(async (item: Treasure, dir: 'up' | 'down') => {
-    const idx  = items.findIndex(i => i._id === item._id)
-    const swap = dir === 'up' ? idx - 1 : idx + 1
-    if (swap < 0 || swap >= items.length) return
+  const { move, movingId } = useReorder(items, load, '/api/variety')
 
-    const other  = items[swap]
-    const aOrder = item.order  ?? idx
-    const bOrder = other.order ?? swap
-
-    setMoving(item._id ?? null)
-    await Promise.all([
-      PUT(item._id!,  { order: bOrder }),
-      PUT(other._id!, { order: aOrder }),
-    ])
-    await load()
-    setMoving(null)
-  }, [items, load])
-
-  /* ── Columns (inside component so handleMove is accessible) ── */
+  /* ── Columns ── */
   const columns: Column<Treasure>[] = [
     {
       key: 'order', label: '↕', width: '64px',
-      render: (_, row) => {
-        const idx = items.findIndex(i => i._id === row._id)
-        const busy = moving === row._id
-        return (
-          <div className="flex flex-col items-center gap-0.5">
-            <button
-              onClick={e => { e.stopPropagation(); handleMove(row, 'up') }}
-              disabled={idx === 0 || busy}
-              className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/10 hover:bg-amber-500/30 hover:text-amber-300 disabled:opacity-20 disabled:cursor-not-allowed text-white text-xs transition"
-              title="للأعلى"
-            >▲</button>
-            <span className="text-slate-500 text-[10px] font-mono leading-none">{row.order}</span>
-            <button
-              onClick={e => { e.stopPropagation(); handleMove(row, 'down') }}
-              disabled={idx === items.length - 1 || busy}
-              className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/10 hover:bg-amber-500/30 hover:text-amber-300 disabled:opacity-20 disabled:cursor-not-allowed text-white text-xs transition"
-              title="للأسفل"
-            >▼</button>
-          </div>
-        )
-      },
+      render: (_, row) => (
+        <OrderButtons
+          idx={items.findIndex(i => i._id === row._id)}
+          total={items.length} order={row.order}
+          busy={movingId === row._id}
+          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
+        />
+      ),
     },
     { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
     {
@@ -152,7 +121,7 @@ export default function VarietyAdminPage() {
         data={items} columns={columns}
         onEdit={item => { setForm({ ...item }); setEditId(item._id ?? null); setModalOpen(true) }}
         onDelete={async item => { await fetch(`/api/variety/${item._id}`, { method: 'DELETE' }); showToast('تم الحذف'); load() }}
-        onToggleActive={async item => { await PUT(item._id!, { isActive: !item.isActive }); load() }}
+        onToggleActive={async item => { await fetch(`/api/variety/${item._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ isActive: !item.isActive }) }); load() }}
         loading={loading} emptyMessage="لا توجد كنوز"
       />
 

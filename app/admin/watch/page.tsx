@@ -4,6 +4,8 @@ import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
+import OrderButtons from '@/components/admin/OrderButtons'
+import { useReorder } from '@/lib/hooks/useReorder'
 
 type VideoSource = 'youtube' | 'drive'
 
@@ -38,67 +40,6 @@ function ytThumb(id: string) {
   return id ? `https://img.youtube.com/vi/${id}/maxresdefault.jpg` : ''
 }
 
-const columns: Column<Video>[] = [
-  {
-    key: 'thumbnailUrl',
-    label: '',
-    width: '72px',
-    render: (v, row) => {
-      const thumb = v ? String(v) : (row.youtubeId ? ytThumb(row.youtubeId) : '')
-      return thumb ? (
-        <img src={thumb} alt="" className="w-14 h-10 object-cover rounded-lg" />
-      ) : (
-        <span className="text-2xl">{row.icon}</span>
-      )
-    },
-  },
-  {
-    key: 'title',
-    label: 'العنوان',
-    render: (v, row) => (
-      <div>
-        <div className="font-medium text-white">{String(v)}</div>
-        <div className="text-xs text-slate-400">{row.category}</div>
-      </div>
-    ),
-  },
-  {
-    key: 'youtubeId',
-    label: 'المصدر',
-    render: (v, row) =>
-      v ? (
-        <span className="flex items-center gap-1.5 text-xs text-red-400 font-medium">
-          <span className="w-4 h-4 bg-red-600 rounded-sm flex items-center justify-center text-white text-[10px]">▶</span>
-          YouTube
-        </span>
-      ) : row.videoUrl ? (
-        <span className="flex items-center gap-1.5 text-xs text-blue-400 font-medium">
-          <span>🗂️</span> Drive
-        </span>
-      ) : (
-        <span className="text-xs text-slate-500">-</span>
-      ),
-  },
-  { key: 'duration', label: 'المدة', render: v => (v ? `${v} دقيقة` : '-') },
-  {
-    key: 'isComingSoon',
-    label: 'الحالة',
-    render: (_, row) => (
-      <span
-        className={`px-2 py-0.5 rounded-full text-xs ${
-          row.isComingSoon
-            ? 'bg-yellow-500/20 text-yellow-400'
-            : row.isActive
-            ? 'bg-green-500/20 text-green-400'
-            : 'bg-slate-500/20 text-slate-400'
-        }`}
-      >
-        {row.isComingSoon ? 'قريباً' : row.isActive ? 'نشط' : 'مخفي'}
-      </span>
-    ),
-  },
-]
-
 export default function WatchAdminPage() {
   const [videos, setVideos] = useState<Video[]>([])
   const [loading, setLoading] = useState(true)
@@ -121,6 +62,57 @@ export default function WatchAdminPage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  const { move, movingId } = useReorder(videos, load, '/api/watch')
+
+  const columns: Column<Video>[] = [
+    {
+      key: 'order', label: '↕', width: '64px',
+      render: (_, row) => (
+        <OrderButtons
+          idx={videos.findIndex(i => i._id === row._id)}
+          total={videos.length} order={row.order}
+          busy={movingId === row._id}
+          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
+        />
+      ),
+    },
+    {
+      key: 'thumbnailUrl', label: '', width: '72px',
+      render: (v, row) => {
+        const thumb = v ? String(v) : (row.youtubeId ? ytThumb(row.youtubeId) : '')
+        return thumb ? <img src={thumb} alt="" className="w-14 h-10 object-cover rounded-lg" /> : <span className="text-2xl">{row.icon}</span>
+      },
+    },
+    {
+      key: 'title', label: 'العنوان',
+      render: (v, row) => (
+        <div>
+          <div className="font-medium text-white">{String(v)}</div>
+          <div className="text-xs text-slate-400">{row.category}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'youtubeId', label: 'المصدر',
+      render: (v, row) => v ? (
+        <span className="flex items-center gap-1.5 text-xs text-red-400 font-medium">
+          <span className="w-4 h-4 bg-red-600 rounded-sm flex items-center justify-center text-white text-[10px]">▶</span>YouTube
+        </span>
+      ) : row.videoUrl ? (
+        <span className="flex items-center gap-1.5 text-xs text-blue-400 font-medium"><span>🗂️</span> Drive</span>
+      ) : <span className="text-xs text-slate-500">-</span>,
+    },
+    { key: 'duration', label: 'المدة', render: v => (v ? `${v} دقيقة` : '-') },
+    {
+      key: 'isComingSoon', label: 'الحالة',
+      render: (_, row) => (
+        <span className={`px-2 py-0.5 rounded-full text-xs ${row.isComingSoon ? 'bg-yellow-500/20 text-yellow-400' : row.isActive ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'}`}>
+          {row.isComingSoon ? 'قريباً' : row.isActive ? 'نشط' : 'مخفي'}
+        </span>
+      ),
+    },
+  ]
 
   const openCreate = () => { setForm(EMPTY); setEditId(null); setModalOpen(true) }
   const openEdit = (v: Video) => {

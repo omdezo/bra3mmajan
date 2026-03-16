@@ -4,6 +4,8 @@ import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
+import OrderButtons from '@/components/admin/OrderButtons'
+import { useReorder } from '@/lib/hooks/useReorder'
 
 interface ClassSession {
   _id?: string; title: string; subject: string; grade: number
@@ -21,25 +23,6 @@ const EMPTY: Omit<ClassSession, '_id'> = {
 
 const GRADES = [1, 2, 3, 4].map(v => ({ value: String(v), label: `الصف ${['الأول', 'الثاني', 'الثالث', 'الرابع'][v - 1]}` }))
 const SUBJECTS = ['جميع المواد', 'اللغة العربية', 'الرياضيات', 'العلوم', 'التربية الإسلامية', 'اللغة الإنجليزية'].map(v => ({ value: v, label: v }))
-
-const columns: Column<ClassSession>[] = [
-  { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
-  { key: 'title', label: 'الحصة', render: (v, row) => (
-    <div>
-      <div className="font-medium text-white">{String(v)}</div>
-      <div className="text-xs text-slate-400">{['الأول', 'الثاني', 'الثالث', 'الرابع'][row.grade - 1] || row.grade} — {row.subject}</div>
-    </div>
-  )},
-  { key: 'teacher', label: 'المعلم/ة' },
-  { key: 'day', label: 'اليوم', render: v => String(v || '-') },
-  { key: 'time', label: 'الوقت', render: v => String(v || '-') },
-  { key: 'teamsLink', label: 'رابط Teams', render: v => v ? (
-    <a href={String(v)} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline text-xs">فتح الرابط ↗</a>
-  ) : '-' },
-  { key: 'isActive', label: 'الحالة', render: v => (
-    <span className={`px-2 py-0.5 rounded-full text-xs ${v ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'}`}>{v ? 'نشط' : 'مخفي'}</span>
-  )},
-]
 
 export default function ClassesAdminPage() {
   const [sessions, setSessions] = useState<ClassSession[]>([])
@@ -61,6 +44,38 @@ export default function ClassesAdminPage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  const { move, movingId } = useReorder(sessions, load, '/api/classes')
+
+  const columns: Column<ClassSession>[] = [
+    {
+      key: 'order', label: '↕', width: '64px',
+      render: (_, row) => (
+        <OrderButtons
+          idx={sessions.findIndex(i => i._id === row._id)}
+          total={sessions.length} order={row.order}
+          busy={movingId === row._id}
+          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
+        />
+      ),
+    },
+    { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
+    { key: 'title', label: 'الحصة', render: (v, row) => (
+      <div>
+        <div className="font-medium text-white">{String(v)}</div>
+        <div className="text-xs text-slate-400">{['الأول', 'الثاني', 'الثالث', 'الرابع'][row.grade - 1] || row.grade} — {row.subject}</div>
+      </div>
+    )},
+    { key: 'teacher', label: 'المعلم/ة' },
+    { key: 'day', label: 'اليوم', render: v => String(v || '-') },
+    { key: 'time', label: 'الوقت', render: v => String(v || '-') },
+    { key: 'teamsLink', label: 'رابط Teams', render: v => v ? (
+      <a href={String(v)} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline text-xs">فتح الرابط ↗</a>
+    ) : '-' },
+    { key: 'isActive', label: 'الحالة', render: v => (
+      <span className={`px-2 py-0.5 rounded-full text-xs ${v ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'}`}>{v ? 'نشط' : 'مخفي'}</span>
+    )},
+  ]
 
   const handleSave = async () => {
     setSaving(true)
