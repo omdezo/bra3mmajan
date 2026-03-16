@@ -48,8 +48,55 @@ const STATIC_TREASURES: ApiTreasure[] = [
   { _id: '4', title: "تقنيات التعليم", icon: "🎓", description: "شروحات للمنهج العُماني، تمارين تفاعلية، مراجعات", category: "أساليب تعليمية", color: "#3B82F6", isComingSoon: true },
 ];
 
-const isCanva      = (url: string) => url.includes('canva.com');
-const isGDrive     = (url: string) => url.includes('drive.google.com');
+const isCanva  = (url: string) => url.includes('canva.com');
+const isGDrive = (url: string) => url.includes('drive.google.com');
+
+/* ── Auto thumbnail for pptUrl cards ────────────────────────── */
+function PptThumbnail({
+  pptUrl, title, icon, IconComp, gradColor,
+}: {
+  pptUrl: string
+  title: string
+  icon: string
+  IconComp: React.ElementType
+  gradColor: string
+}) {
+  const [src, setSrc]       = useState<string | null>(null)
+  const [ready, setReady]   = useState(false)
+  const [imgOk, setImgOk]   = useState(true)
+
+  useEffect(() => {
+    setSrc(null); setReady(false); setImgOk(true)
+    fetch(`/api/thumbnail?url=${encodeURIComponent(pptUrl)}`)
+      .then(r => r.json())
+      .then(d => { if (d.url) setSrc(d.url) })
+      .catch(() => {})
+  }, [pptUrl])
+
+  // Fallback icon when no thumbnail
+  if (!src || !imgOk) {
+    return (
+      <div className={`w-20 h-20 bg-gradient-to-br ${gradColor} rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform`}>
+        {icon ? <span className="text-4xl">{icon}</span> : <IconComp className="w-10 h-10 text-white" />}
+      </div>
+    )
+  }
+
+  return (
+    <div className="w-full h-44 rounded-2xl overflow-hidden mb-6 shadow-md border-2 border-amber-200 relative bg-amber-50">
+      {/* skeleton */}
+      {!ready && <div className="absolute inset-0 animate-pulse bg-amber-100" />}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={title}
+        className={`w-full h-full object-cover transition-opacity duration-300 ${ready ? 'opacity-100' : 'opacity-0'}`}
+        onLoad={() => setReady(true)}
+        onError={() => setImgOk(false)}
+      />
+    </div>
+  )
+}
 
 function gDriveProxyUrl(url: string): string {
   const m = url.match(/drive\.google\.com\/file\/d\/([^/?#]+)/);
@@ -202,9 +249,17 @@ export default function VarietyPage() {
                   >
                     <div className={`${bgColor} rounded-3xl p-8 border-4 border-amber-400 shadow-xl hover:shadow-2xl transition-all`}>
                       {item.imageUrl ? (
-                        <div className="relative w-full h-40 rounded-2xl overflow-hidden mb-6">
+                        <div className="relative w-full h-44 rounded-2xl overflow-hidden mb-6">
                           <Image src={item.imageUrl} alt={item.title} fill className="object-cover" />
                         </div>
+                      ) : item.pptUrl ? (
+                        <PptThumbnail
+                          pptUrl={item.pptUrl}
+                          title={item.title}
+                          icon={item.icon}
+                          IconComp={IconComponent}
+                          gradColor={gradColor}
+                        />
                       ) : (
                         <div className={`w-20 h-20 bg-gradient-to-br ${gradColor} rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform`}>
                           {item.icon
