@@ -4,7 +4,6 @@ import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
-import OrderButtons from '@/components/admin/OrderButtons'
 import { useReorder } from '@/lib/hooks/useReorder'
 
 interface Game {
@@ -55,20 +54,9 @@ export default function GamesAdminPage() {
 
   useEffect(() => { loadGames() }, [loadGames])
 
-  const { move, movingId } = useReorder(games, loadGames, '/api/games')
+  const { reorder } = useReorder(games, setGames, '/api/games')
 
   const columns: Column<Game>[] = [
-    {
-      key: 'order', label: '↕', width: '64px',
-      render: (_, row) => (
-        <OrderButtons
-          idx={games.findIndex(i => i._id === row._id)}
-          total={games.length} order={row.order}
-          busy={movingId === row._id}
-          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
-        />
-      ),
-    },
     { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
     { key: 'title', label: 'العنوان', render: (v, row) => (
       <div>
@@ -149,6 +137,7 @@ export default function GamesAdminPage() {
         onEdit={openEdit}
         onDelete={handleDelete}
         onToggleActive={handleToggleActive}
+        onReorder={reorder}
         loading={loading}
         emptyMessage="لا توجد ألعاب — أضف أول لعبة"
       />

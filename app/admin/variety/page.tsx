@@ -5,7 +5,6 @@ import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
 import PPTUploader from '@/components/admin/PPTUploader'
-import OrderButtons from '@/components/admin/OrderButtons'
 import { useReorder } from '@/lib/hooks/useReorder'
 
 interface Treasure {
@@ -45,21 +44,10 @@ export default function VarietyAdminPage() {
 
   useEffect(() => { load() }, [load])
 
-  const { move, movingId } = useReorder(items, load, '/api/variety')
+  const { reorder } = useReorder(items, setItems, '/api/variety')
 
   /* ── Columns ── */
   const columns: Column<Treasure>[] = [
-    {
-      key: 'order', label: '↕', width: '64px',
-      render: (_, row) => (
-        <OrderButtons
-          idx={items.findIndex(i => i._id === row._id)}
-          total={items.length} order={row.order}
-          busy={movingId === row._id}
-          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
-        />
-      ),
-    },
     { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
     {
       key: 'title', label: 'العنوان',
@@ -120,6 +108,7 @@ export default function VarietyAdminPage() {
       <DataTable
         data={items} columns={columns}
         onEdit={item => { setForm({ ...item }); setEditId(item._id ?? null); setModalOpen(true) }}
+        onReorder={reorder}
         onDelete={async item => { await fetch(`/api/variety/${item._id}`, { method: 'DELETE' }); showToast('تم الحذف'); load() }}
         onToggleActive={async item => { await fetch(`/api/variety/${item._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ isActive: !item.isActive }) }); load() }}
         loading={loading} emptyMessage="لا توجد كنوز"

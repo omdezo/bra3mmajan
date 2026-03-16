@@ -3,7 +3,6 @@ import { useEffect, useState, useCallback } from 'react'
 import AdminShell from '@/components/admin/AdminShell'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
-import OrderButtons from '@/components/admin/OrderButtons'
 import { useReorder } from '@/lib/hooks/useReorder'
 
 /* ─── Types ─────────────────────────────────────────────────────────── */
@@ -101,7 +100,9 @@ export default function ChallengesAdminPage() {
 
   useEffect(() => { load() }, [load])
 
-  const { move, movingId } = useReorder(challenges, load, '/api/challenges')
+  const { reorder } = useReorder(challenges, setChallenges, '/api/challenges')
+  const [dragIdx, setDragIdx] = useState<number | null>(null)
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
 
   /* ── Challenge CRUD ── */
   const openCreateChallenge = () => { setCForm(EMPTY_CHALLENGE); setCEditId(null); setCModal(true) }
@@ -309,16 +310,21 @@ export default function ChallengesAdminPage() {
           ) : (
             <div className="space-y-3">
               {challenges.map((c, idx) => (
-                <div key={c._id} className="bg-slate-800/50 border border-white/5 rounded-2xl p-4 hover:border-white/10 transition group">
+                <div
+                  key={c._id}
+                  draggable
+                  onDragStart={e => { e.dataTransfer.effectAllowed = 'move'; setDragIdx(idx) }}
+                  onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (dragOverIdx !== idx) setDragOverIdx(idx) }}
+                  onDrop={e => { e.preventDefault(); if (dragIdx !== null && dragIdx !== idx) reorder(dragIdx, idx); setDragIdx(null); setDragOverIdx(null) }}
+                  onDragEnd={() => { setDragIdx(null); setDragOverIdx(null) }}
+                  className={[
+                    'border rounded-2xl p-4 transition group cursor-grab active:cursor-grabbing',
+                    dragIdx === idx ? 'opacity-40 bg-slate-800/30 border-white/5' : 'bg-slate-800/50 border-white/5 hover:border-white/10',
+                    dragOverIdx === idx && dragIdx !== idx ? 'ring-1 ring-amber-400/50 bg-amber-500/5 border-amber-400/30' : '',
+                  ].join(' ')}
+                >
                   <div className="flex items-center gap-4">
-                    <OrderButtons
-                      idx={idx}
-                      total={challenges.length}
-                      order={c.order}
-                      busy={movingId === c._id}
-                      onUp={() => move(c, 'up')}
-                      onDown={() => move(c, 'down')}
-                    />
+                    <span className="text-slate-600 hover:text-slate-400 transition-colors text-lg select-none" title="اسحب لإعادة الترتيب">⠿</span>
                     <span className="text-3xl">{c.icon}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">

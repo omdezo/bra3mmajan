@@ -4,7 +4,6 @@ import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
-import OrderButtons from '@/components/admin/OrderButtons'
 import { useReorder } from '@/lib/hooks/useReorder'
 
 type VideoSource = 'youtube' | 'drive'
@@ -63,20 +62,9 @@ export default function WatchAdminPage() {
 
   useEffect(() => { load() }, [load])
 
-  const { move, movingId } = useReorder(videos, load, '/api/watch')
+  const { reorder } = useReorder(videos, setVideos, '/api/watch')
 
   const columns: Column<Video>[] = [
-    {
-      key: 'order', label: '↕', width: '64px',
-      render: (_, row) => (
-        <OrderButtons
-          idx={videos.findIndex(i => i._id === row._id)}
-          total={videos.length} order={row.order}
-          busy={movingId === row._id}
-          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
-        />
-      ),
-    },
     {
       key: 'thumbnailUrl', label: '', width: '72px',
       render: (v, row) => {
@@ -198,6 +186,7 @@ export default function WatchAdminPage() {
         data={videos}
         columns={columns}
         onEdit={openEdit}
+        onReorder={reorder}
         onDelete={async v => { await fetch(`/api/watch/${v._id}`, { method: 'DELETE' }); showToast('تم الحذف'); load() }}
         onToggleActive={async v => {
           await fetch(`/api/watch/${v._id}`, {

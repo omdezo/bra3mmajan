@@ -4,7 +4,6 @@ import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
-import OrderButtons from '@/components/admin/OrderButtons'
 import { useReorder } from '@/lib/hooks/useReorder'
 
 interface ClassSession {
@@ -45,20 +44,9 @@ export default function ClassesAdminPage() {
 
   useEffect(() => { load() }, [load])
 
-  const { move, movingId } = useReorder(sessions, load, '/api/classes')
+  const { reorder } = useReorder(sessions, setSessions, '/api/classes')
 
   const columns: Column<ClassSession>[] = [
-    {
-      key: 'order', label: '↕', width: '64px',
-      render: (_, row) => (
-        <OrderButtons
-          idx={sessions.findIndex(i => i._id === row._id)}
-          total={sessions.length} order={row.order}
-          busy={movingId === row._id}
-          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
-        />
-      ),
-    },
     { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
     { key: 'title', label: 'الحصة', render: (v, row) => (
       <div>
@@ -97,6 +85,7 @@ export default function ClassesAdminPage() {
       {toast && <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-800 border border-white/10 text-white px-4 py-2 rounded-xl text-sm shadow-lg">{toast}</div>}
       <DataTable data={sessions} columns={columns}
         onEdit={(s) => { setForm({ ...s }); setEditId(s._id ?? null); setModalOpen(true) }}
+        onReorder={reorder}
         onDelete={async (s) => { await fetch(`/api/classes/${s._id}`, { method: 'DELETE' }); showToast('تم الحذف'); load() }}
         onToggleActive={async (s) => { await fetch(`/api/classes/${s._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ isActive: !s.isActive }) }); load() }}
         loading={loading} emptyMessage="لا توجد حصص" />

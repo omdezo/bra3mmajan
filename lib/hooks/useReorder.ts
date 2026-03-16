@@ -1,38 +1,38 @@
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 
 interface Orderable { _id?: string; order: number }
 
 /**
- * Generic hook to swap `order` values between two adjacent rows.
- *
- * @param items   Sorted item array (as returned from the API, order: 1)
- * @param load    Reload callback after swap
- * @param apiPath Base path, e.g. '/api/games'  →  PUT /api/games/:id
+ * Optimistic drag-and-drop reorder.
+ * Immediately updates local state, then persists new `order` values (= array index) via PUT.
  */
 export function useReorder<T extends Orderable>(
   items: T[],
-  load: () => void | Promise<void>,
+  setItems: (items: T[]) => void,
   apiPath: string,
 ) {
-  const [movingId, setMovingId] = useState<string | null>(null)
+  const reorder = useCallback(async (fromIdx: number, toIdx: number) => {
+    if (fromIdx === toIdx) return
 
-  const move = useCallback(async (item: T, dir: 'up' | 'down') => {
-    const idx  = items.findIndex(i => i._id === item._id)
-    const swap = dir === 'up' ? idx - 1 : idx + 1
-    if (swap < 0 || swap >= items.length) return
+    // 1. Optimistic UI update
+    const next = [...items]
+    const [moved] = next.splice(fromIdx, 1)
+    next.splice(toIdx, 0, moved)
+    setItems(next)
 
-    const other  = items[swap]
-    const aOrder = item.order  ?? idx
-    const bOrder = other.order ?? swap
+    // 2. Persist: assign each item order = its new array index
+    await Promise.all(
+      next
+        .filter(item => item._id)
+        .map((item, idx) =>
+          fetch(`${apiPath}/${item._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order: idx }),
+          })
+        )
+    )
+  }, [items, setItems, apiPath])
 
-    setMovingId(item._id ?? null)
-    await Promise.all([
-      fetch(`${apiPath}/${item._id}`,  { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order: bOrder }) }),
-      fetch(`${apiPath}/${other._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order: aOrder }) }),
-    ])
-    await load()
-    setMovingId(null)
-  }, [items, load, apiPath])
-
-  return { move, movingId }
+  return { reorder }
 }

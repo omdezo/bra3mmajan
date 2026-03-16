@@ -4,7 +4,6 @@ import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
 import { FormField, Input, Textarea, Select, Toggle } from '@/components/admin/FormField'
-import OrderButtons from '@/components/admin/OrderButtons'
 import { useReorder } from '@/lib/hooks/useReorder'
 
 interface Story {
@@ -55,20 +54,9 @@ export default function StoriesAdminPage() {
 
   useEffect(() => { load() }, [load])
 
-  const { move, movingId } = useReorder(stories, load, '/api/stories')
+  const { reorder } = useReorder(stories, setStories, '/api/stories')
 
   const columns: Column<Story>[] = [
-    {
-      key: 'order', label: '↕', width: '64px',
-      render: (_, row) => (
-        <OrderButtons
-          idx={stories.findIndex(i => i._id === row._id)}
-          total={stories.length} order={row.order}
-          busy={movingId === row._id}
-          onUp={() => move(row, 'up')} onDown={() => move(row, 'down')}
-        />
-      ),
-    },
     { key: 'coverImage', label: '', width: '72px', render: (v, row) => v ? <img src={String(v)} alt="" className="w-14 h-10 object-cover rounded-lg" /> : <span className="text-2xl">{row.icon}</span> },
     { key: 'title', label: 'العنوان', render: (v, row) => (<div><div className="font-medium text-white">{String(v)}</div><div className="text-xs text-slate-400">{row.category}</div></div>) },
     { key: 'link', label: 'الرابط', render: v => v ? <a href={String(v)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline truncate max-w-[160px] block" onClick={e => e.stopPropagation()}>{String(v).replace(/^https?:\/\//, '')}</a> : <span className="text-xs text-slate-500">بدون رابط</span> },
@@ -139,6 +127,7 @@ export default function StoriesAdminPage() {
         data={stories}
         columns={columns}
         onEdit={openEdit}
+        onReorder={reorder}
         onDelete={async s => { await fetch(`/api/stories/${s._id}`, { method: 'DELETE' }); showToast('تم الحذف'); load() }}
         onToggleActive={async s => {
           await fetch(`/api/stories/${s._id}`, {
