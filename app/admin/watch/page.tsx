@@ -84,6 +84,7 @@ export default function WatchAdminPage() {
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [thumbProcessing, setThumbProcessing] = useState(false)
+  const [ytInput, setYtInput] = useState('')
   const [pdfUploading, setPdfUploading] = useState(false)
   const [pdfFileName, setPdfFileName] = useState('')
   const [activeTab, setActiveTab] = useState<'all' | 'video' | 'pdf'>('all')
@@ -167,12 +168,13 @@ export default function WatchAdminPage() {
     },
   ]
 
-  const openCreateVideo = () => { setForm(EMPTY_VIDEO); setEditId(null); setPdfFileName(''); setModalOpen(true) }
-  const openCreatePdf = () => { setForm(EMPTY_PDF); setEditId(null); setPdfFileName(''); setModalOpen(true) }
+  const openCreateVideo = () => { setForm(EMPTY_VIDEO); setYtInput(''); setEditId(null); setPdfFileName(''); setModalOpen(true) }
+  const openCreatePdf = () => { setForm(EMPTY_PDF); setYtInput(''); setEditId(null); setPdfFileName(''); setModalOpen(true) }
   const openEdit = (v: WatchItem) => {
     const isPdf = v.contentType === 'pdf'
     const source: ContentSource = isPdf ? 'pdf' : v.youtubeId ? 'youtube' : 'drive'
     setForm({ ...v, source })
+    setYtInput(v.youtubeId ? `https://www.youtube.com/watch?v=${v.youtubeId}` : '')
     setEditId(v._id ?? null)
     if (isPdf && v.pdfUrl) {
       const parts = v.pdfUrl.split('/')
@@ -227,12 +229,13 @@ export default function WatchAdminPage() {
       payload.videoUrl = ''
       payload.duration = 0
     } else if (form.source === 'youtube') {
+      payload.youtubeId = extractYoutubeId(ytInput)
       payload.videoUrl = ''
       payload.pdfUrl = ''
       payload.pdfR2Key = ''
       payload.pageCount = 0
-      if (!payload.thumbnailUrl && form.youtubeId) {
-        payload.thumbnailUrl = ytThumb(form.youtubeId)
+      if (!payload.thumbnailUrl && payload.youtubeId) {
+        payload.thumbnailUrl = ytThumb(payload.youtubeId as string)
       }
     } else {
       payload.youtubeId = ''
@@ -277,10 +280,11 @@ export default function WatchAdminPage() {
   }
 
   const isPdf = form.contentType === 'pdf'
+  const ytExtracted = extractYoutubeId(ytInput)
   const previewThumb =
     form.thumbnailUrl ||
-    (!isPdf && form.source === 'youtube' && form.youtubeId ? ytThumb(form.youtubeId) : '')
-  const isAutoThumb = !form.thumbnailUrl && !isPdf && form.source === 'youtube' && !!form.youtubeId
+    (!isPdf && form.source === 'youtube' && ytExtracted ? ytThumb(ytExtracted) : '')
+  const isAutoThumb = !form.thumbnailUrl && !isPdf && form.source === 'youtube' && !!ytExtracted
 
   const videoCount = items.filter(i => i.contentType !== 'pdf').length
   const pdfCount = items.filter(i => i.contentType === 'pdf').length
@@ -508,15 +512,14 @@ export default function WatchAdminPage() {
               {/* Source-specific input */}
               {form.source === 'youtube' ? (
                 <FormField
-                  label="رابط YouTube أو معرّف الفيديو"
+                  label="رابط YouTube"
                   required
-                  hint="الصق الرابط الكامل مثل youtube.com/watch?v=... وسيتم استخراج المعرّف تلقائياً"
+                  hint={ytExtracted && ytInput.includes('youtube') ? `تم استخراج المعرّف: ${ytExtracted}` : 'الصق رابط الفيديو الكامل من YouTube'}
                 >
                   <Input
-                    value={form.youtubeId}
-                    onChange={e => upd('youtubeId', extractYoutubeId(e.target.value))}
-                    placeholder="dQw4w9WgXcQ"
-                    className="font-mono tracking-wide"
+                    value={ytInput}
+                    onChange={e => setYtInput(e.target.value)}
+                    placeholder="https://www.youtube.com/watch?v=..."
                     dir="ltr"
                   />
                 </FormField>
@@ -574,9 +577,9 @@ export default function WatchAdminPage() {
             {!isPdf && form.source === 'youtube' && !form.thumbnailUrl && (
               <p className="text-xs text-emerald-400 mb-3 flex items-center gap-1">
                 <span>✓</span>
-                {form.youtubeId
+                {ytExtracted
                   ? 'سيتم استخدام الصورة المصغرة من YouTube تلقائياً — أو ارفع صورة مخصصة أدناه'
-                  : 'أدخل معرّف YouTube أولاً لتظهر الصورة تلقائياً'}
+                  : 'الصق رابط YouTube أولاً لتظهر الصورة تلقائياً'}
               </p>
             )}
 
