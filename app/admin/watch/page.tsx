@@ -53,6 +53,28 @@ function ytThumb(id: string) {
   return id ? `https://img.youtube.com/vi/${id}/maxresdefault.jpg` : ''
 }
 
+/** Extract YouTube video ID from any URL format, or return the raw string if already an ID */
+function extractYoutubeId(input: string): string {
+  const trimmed = input.trim()
+  // Full URL formats: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID, youtube.com/shorts/ID
+  try {
+    const url = new URL(trimmed)
+    if (url.hostname.includes('youtube.com') || url.hostname.includes('youtube-nocookie.com')) {
+      const v = url.searchParams.get('v')
+      if (v) return v
+      // /embed/ID or /shorts/ID
+      const seg = url.pathname.split('/').filter(Boolean)
+      if ((seg[0] === 'embed' || seg[0] === 'shorts') && seg[1]) return seg[1]
+    }
+    if (url.hostname === 'youtu.be') {
+      return url.pathname.slice(1).split('/')[0] || trimmed
+    }
+  } catch {
+    // Not a URL — treat as raw video ID
+  }
+  return trimmed
+}
+
 export default function WatchAdminPage() {
   const [items, setItems] = useState<WatchItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -486,13 +508,13 @@ export default function WatchAdminPage() {
               {/* Source-specific input */}
               {form.source === 'youtube' ? (
                 <FormField
-                  label="معرّف YouTube (Video ID)"
+                  label="رابط YouTube أو معرّف الفيديو"
                   required
-                  hint="مثال: من الرابط youtube.com/watch?v=dQw4w9WgXcQ — الكود هو dQw4w9WgXcQ"
+                  hint="الصق الرابط الكامل مثل youtube.com/watch?v=... وسيتم استخراج المعرّف تلقائياً"
                 >
                   <Input
                     value={form.youtubeId}
-                    onChange={e => upd('youtubeId', e.target.value.trim())}
+                    onChange={e => upd('youtubeId', extractYoutubeId(e.target.value))}
                     placeholder="dQw4w9WgXcQ"
                     className="font-mono tracking-wide"
                     dir="ltr"
