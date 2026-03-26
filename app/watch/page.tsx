@@ -226,7 +226,7 @@ function VideoCard({ item, index }: { item: ApiItem; index: number }) {
   const badgeColor = CATEGORY_BADGE[item.category] ?? 'bg-purple-100 text-purple-700';
   const isYoutube = !!item.youtubeId;
   const watchUrl = item.youtubeId
-    ? `https://www.youtube.com/watch?v=${item.youtubeId}`
+    ? `https://www.yout-ube.com/watch?v=${item.youtubeId}`
     : item.videoUrl;
 
   return (
