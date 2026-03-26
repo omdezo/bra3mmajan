@@ -1,17 +1,22 @@
 /**
- * Video Model - Manages watch section content (cartoons, anasheed, educational videos)
+ * Video Model - Manages watch section content (videos, PDFs, activities)
  */
 import mongoose, { Document, Schema, Model } from 'mongoose'
 
-export type VideoCategory = 'رسوم متحركة' | 'أناشيد' | 'فيديوهات تعليمية' | 'برامج أطفال'
+export type VideoCategory = 'رسوم متحركة' | 'أناشيد' | 'فيديوهات تعليمية' | 'برامج أطفال' | 'أنشطة تفاعلية' | 'أوراق عمل'
+export type ContentType = 'video' | 'pdf'
 
 export interface IVideo extends Document {
   title: string
   description: string
   category: VideoCategory
+  contentType: ContentType
   thumbnailUrl?: string
   videoUrl?: string
   youtubeId?: string
+  pdfUrl?: string
+  pdfR2Key?: string
+  pageCount?: number
   duration: number
   icon: string
   color: string
@@ -31,12 +36,16 @@ const VideoSchema = new Schema<IVideo>(
     description: { type: String, required: true },
     category: {
       type: String,
-      enum: ['رسوم متحركة', 'أناشيد', 'فيديوهات تعليمية', 'برامج أطفال'],
+      enum: ['رسوم متحركة', 'أناشيد', 'فيديوهات تعليمية', 'برامج أطفال', 'أنشطة تفاعلية', 'أوراق عمل'],
       required: true,
     },
+    contentType: { type: String, enum: ['video', 'pdf'], default: 'video' },
     thumbnailUrl: { type: String },
     videoUrl: { type: String },
     youtubeId: { type: String },
+    pdfUrl: { type: String },
+    pdfR2Key: { type: String },
+    pageCount: { type: Number },
     duration: { type: Number, default: 0 },
     icon: { type: String, default: '🎬' },
     color: { type: String, default: '#EC4899' },
