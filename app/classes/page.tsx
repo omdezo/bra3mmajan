@@ -7,47 +7,76 @@ import { Navbar } from "@/components/Navbar";
 import { VisitorCounter } from "@/components/VisitorCounter";
 import { useState, useEffect } from "react";
 
-interface ApiClass {
-  _id: string;
-  title: string;
-  subject: string;
-  grade: number;
-  teacher: string;
-  teamsLink: string;
-  description?: string;
-  day?: string;
-  time?: string;
-  icon: string;
-  color: string;
-  isActive: boolean;
-}
-
-const GRADE_CONFIG: Record<number, { label: string; color: string; gradient: string; bg: string; border: string; iconBg: string; badge: string }> = {
-  1: { label: 'الصف الأول', color: 'text-blue-700', gradient: 'from-blue-500 to-blue-700', bg: 'bg-blue-50', border: 'border-blue-300', iconBg: 'from-blue-400 to-blue-600', badge: 'bg-blue-100 text-blue-700' },
-  2: { label: 'الصف الثاني', color: 'text-emerald-700', gradient: 'from-emerald-500 to-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-300', iconBg: 'from-emerald-400 to-emerald-600', badge: 'bg-emerald-100 text-emerald-700' },
-  3: { label: 'الصف الثالث', color: 'text-purple-700', gradient: 'from-purple-500 to-purple-700', bg: 'bg-purple-50', border: 'border-purple-300', iconBg: 'from-purple-400 to-purple-600', badge: 'bg-purple-100 text-purple-700' },
-  4: { label: 'الصف الرابع', color: 'text-amber-700', gradient: 'from-amber-500 to-orange-600', bg: 'bg-amber-50', border: 'border-amber-300', iconBg: 'from-amber-400 to-orange-500', badge: 'bg-amber-100 text-amber-700' },
-};
-
-const GRADE_EMOJIS: Record<number, string> = { 1: '1️⃣', 2: '2️⃣', 3: '3️⃣', 4: '4️⃣' };
+const GRADES = [
+  {
+    grade: 1,
+    label: 'الصف الأول',
+    emoji: '1️⃣',
+    gradient: 'from-blue-400 to-blue-600',
+    bg: 'bg-blue-50',
+    border: 'border-blue-300',
+    hoverBorder: 'hover:border-blue-400',
+    shadow: 'hover:shadow-blue-200/60',
+    textColor: 'text-blue-700',
+    character: '🧒',
+    desc: 'حصص تفاعلية للصف الأول الأساسي',
+  },
+  {
+    grade: 2,
+    label: 'الصف الثاني',
+    emoji: '2️⃣',
+    gradient: 'from-emerald-400 to-emerald-600',
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-300',
+    hoverBorder: 'hover:border-emerald-400',
+    shadow: 'hover:shadow-emerald-200/60',
+    textColor: 'text-emerald-700',
+    character: '👦',
+    desc: 'حصص تفاعلية للصف الثاني الأساسي',
+  },
+  {
+    grade: 3,
+    label: 'الصف الثالث',
+    emoji: '3️⃣',
+    gradient: 'from-purple-400 to-purple-600',
+    bg: 'bg-purple-50',
+    border: 'border-purple-300',
+    hoverBorder: 'hover:border-purple-400',
+    shadow: 'hover:shadow-purple-200/60',
+    textColor: 'text-purple-700',
+    character: '👧',
+    desc: 'حصص تفاعلية للصف الثالث الأساسي',
+  },
+  {
+    grade: 4,
+    label: 'الصف الرابع',
+    emoji: '4️⃣',
+    gradient: 'from-amber-400 to-orange-500',
+    bg: 'bg-amber-50',
+    border: 'border-amber-300',
+    hoverBorder: 'hover:border-amber-400',
+    shadow: 'hover:shadow-amber-200/60',
+    textColor: 'text-amber-700',
+    character: '🧑',
+    desc: 'حصص تفاعلية للصف الرابع الأساسي',
+  },
+];
 
 export default function ClassesPage() {
-  const [classes, setClasses] = useState<ApiClass[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [counts, setCounts] = useState<Record<number, number>>({ 1: 0, 2: 0, 3: 0, 4: 0 });
 
   useEffect(() => {
     fetch('/api/classes?limit=100')
       .then(r => r.json())
-      .then(d => { if (d.success) setClasses(d.data) })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then(d => {
+        if (d.success) {
+          const c: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 };
+          d.data.forEach((cls: { grade: number }) => { if (c[cls.grade] !== undefined) c[cls.grade]++ });
+          setCounts(c);
+        }
+      })
+      .catch(() => {});
   }, []);
-
-  // Group classes by grade
-  const gradeGroups: Record<number, ApiClass[]> = { 1: [], 2: [], 3: [], 4: [] };
-  classes.forEach(c => {
-    if (gradeGroups[c.grade]) gradeGroups[c.grade].push(c);
-  });
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-cyan-100 via-blue-50 to-indigo-100" dir="rtl">
@@ -72,7 +101,7 @@ export default function ClassesPage() {
             <span>→</span><span>العودة للرئيسية</span>
           </Link>
 
-          <div className="flex flex-col md:flex-row items-center gap-8 mb-12">
+          <div className="flex flex-col md:flex-row items-center gap-8">
             <motion.div
               className="relative w-48 h-48 md:w-64 md:h-64"
               initial={{ scale: 0, rotate: -180 }}
@@ -106,11 +135,67 @@ export default function ClassesPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                انضم إلى الحصص المباشرة وتفاعل مع معلميك وزملائك!
+                اختر صفك الدراسي وانضم إلى الحصص المباشرة!
                 <br />
                 <span className="text-blue-700 font-bold">التعليم الحديث في متناول يدك! 🎓</span>
               </motion.p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Grade Cards */}
+      <section className="py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-4xl font-black text-center text-blue-700 mb-4">اختر صفك الدراسي</h2>
+          <p className="text-xl text-center text-gray-600 font-bold mb-12">اضغط على صفك للدخول إلى الحصص</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {GRADES.map((g, i) => (
+              <motion.div
+                key={g.grade}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.12 }}
+              >
+                <Link href={`/classes/${g.grade}`} className="block group">
+                  <div className={`relative ${g.bg} rounded-3xl p-8 border-3 ${g.border} ${g.hoverBorder} shadow-lg ${g.shadow} hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden`}>
+                    {/* Background decoration */}
+                    <div className={`absolute -left-8 -bottom-8 w-40 h-40 bg-gradient-to-br ${g.gradient} rounded-full opacity-10 group-hover:opacity-20 transition-opacity`} />
+                    <div className={`absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br ${g.gradient} rounded-full opacity-5 group-hover:opacity-15 transition-opacity`} />
+
+                    <div className="relative z-10 flex items-center gap-5">
+                      {/* Grade Icon */}
+                      <div className={`w-20 h-20 bg-gradient-to-br ${g.gradient} rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 flex-shrink-0`}>
+                        <span className="text-4xl">{g.character}</span>
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-2xl">{g.emoji}</span>
+                          <h3 className={`text-2xl md:text-3xl font-black ${g.textColor}`}>{g.label}</h3>
+                        </div>
+                        <p className="text-gray-600 font-medium text-sm mb-2">{g.desc}</p>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs font-bold px-3 py-1 rounded-full bg-gradient-to-r ${g.gradient} text-white`}>
+                            {counts[g.grade]} {counts[g.grade] === 1 ? 'حصة' : 'حصص'}
+                          </span>
+                          <span className={`text-xs font-bold ${g.textColor} opacity-0 group-hover:opacity-100 transition-opacity`}>
+                            ادخل ←
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Arrow */}
+                      <div className={`w-12 h-12 bg-gradient-to-br ${g.gradient} rounded-xl flex items-center justify-center text-white opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all flex-shrink-0`}>
+                        <span className="text-xl">←</span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -135,11 +220,7 @@ export default function ClassesPage() {
             </div>
             <div className="relative bg-gradient-to-br from-emerald-50 to-teal-50 rounded-[2.3rem] p-8 md:p-12">
               <div className="flex flex-col md:flex-row items-center gap-8">
-                <motion.div
-                  className="relative"
-                  animate={{ y: [0, -10, 0], rotate: [0, 3, -3, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
+                <motion.div className="relative" animate={{ y: [0, -10, 0], rotate: [0, 3, -3, 0] }} transition={{ duration: 4, repeat: Infinity }}>
                   <div className="relative">
                     <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl flex items-center justify-center shadow-2xl border-4 border-white transform rotate-6">
                       <span className="text-6xl md:text-7xl -rotate-6">📚</span>
@@ -175,118 +256,6 @@ export default function ClassesPage() {
         </div>
       </section>
 
-      {/* Grade Sections */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-black text-center text-blue-700 mb-4">اختر صفك الدراسي</h2>
-          <p className="text-xl text-center text-gray-600 font-bold mb-12">
-            انضم للحصة المباشرة عبر Microsoft Teams
-          </p>
-
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : (
-            <div className="space-y-12">
-              {([1, 2, 3, 4] as const).map((grade, gi) => {
-                const config = GRADE_CONFIG[grade];
-                const gradeClasses = gradeGroups[grade];
-
-                return (
-                  <motion.div
-                    key={grade}
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ delay: gi * 0.1 }}
-                  >
-                    {/* Grade Header */}
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className={`w-14 h-14 bg-gradient-to-br ${config.iconBg} rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0`}>
-                        <span className="text-2xl">{GRADE_EMOJIS[grade]}</span>
-                      </div>
-                      <div>
-                        <h3 className={`text-3xl font-black ${config.color}`}>{config.label}</h3>
-                        <p className="text-sm text-gray-500 font-bold">
-                          {gradeClasses.length > 0
-                            ? `${gradeClasses.length} ${gradeClasses.length === 1 ? 'حصة' : 'حصص'}`
-                            : 'لا توجد حصص حالياً'}
-                        </p>
-                      </div>
-                      <div className={`flex-1 h-px bg-gradient-to-l ${config.gradient} opacity-20`} />
-                    </div>
-
-                    {/* Classes Grid */}
-                    {gradeClasses.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {gradeClasses.map((cls, ci) => (
-                          <motion.div
-                            key={cls._id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: ci * 0.05 }}
-                            className="group"
-                          >
-                            <div className={`${config.bg} rounded-2xl p-5 border-2 ${config.border} shadow-md hover:shadow-xl transition-all hover:-translate-y-1`}>
-                              {/* Top: Icon + Subject Badge */}
-                              <div className="flex items-center justify-between mb-3">
-                                <div className={`w-12 h-12 bg-gradient-to-br ${config.iconBg} rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow`}>
-                                  <span className="text-2xl">{cls.icon}</span>
-                                </div>
-                                <span className={`text-xs font-bold px-3 py-1 rounded-full ${config.badge}`}>
-                                  {cls.subject}
-                                </span>
-                              </div>
-
-                              {/* Title */}
-                              <h4 className="text-lg font-black text-gray-800 mb-2 leading-snug">{cls.title}</h4>
-
-                              {/* Info */}
-                              <div className="space-y-1 mb-3">
-                                <p className="text-sm text-gray-600 flex items-center gap-1.5">
-                                  <span>👤</span>
-                                  <span className="font-medium">{cls.teacher}</span>
-                                </p>
-                                {cls.day && cls.time && (
-                                  <p className="text-sm text-gray-500 flex items-center gap-1.5">
-                                    <span>📅</span>
-                                    <span>{cls.day} — {cls.time}</span>
-                                  </p>
-                                )}
-                                {cls.description && (
-                                  <p className="text-sm text-gray-500 line-clamp-2">{cls.description}</p>
-                                )}
-                              </div>
-
-                              {/* Join Button */}
-                              <a
-                                href={cls.teamsLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`block w-full text-center px-4 py-2.5 bg-gradient-to-r ${config.gradient} text-white rounded-xl font-bold text-sm hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95`}
-                              >
-                                انضم للحصة عبر Teams 🎥
-                              </a>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className={`${config.bg} rounded-2xl p-8 border-2 border-dashed ${config.border} text-center`}>
-                        <span className="text-4xl mb-2 block">📭</span>
-                        <p className={`text-lg font-bold ${config.color} opacity-60`}>لا توجد حصص لهذا الصف حالياً</p>
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Features */}
       <section className="py-16 px-4 bg-gradient-to-b from-blue-50 to-cyan-50">
         <div className="max-w-4xl mx-auto">
@@ -306,30 +275,6 @@ export default function ClassesPage() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* How to Join */}
-      <section className="py-16 px-4">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-br from-blue-600 to-cyan-700 text-white p-8 md:p-12 rounded-3xl border-4 border-blue-300 shadow-2xl text-center"
-          >
-            <div className="text-6xl mb-6">📱</div>
-            <h2 className="text-3xl md:text-4xl font-black mb-4">كيف تنضم للحصة؟</h2>
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-right mb-6">
-              <ol className="space-y-3 text-lg font-bold">
-                <li>1️⃣ اختر صفك الدراسي من الأقسام أعلاه</li>
-                <li>2️⃣ اضغط على زر &quot;انضم للحصة عبر Teams&quot;</li>
-                <li>3️⃣ سيتم فتح Microsoft Teams تلقائياً</li>
-                <li>4️⃣ ابدأ التعلم والتفاعل مع معلمك! 🎓</li>
-              </ol>
-            </div>
-            <p className="text-xl font-bold">💡 تأكد من تحميل تطبيق Microsoft Teams على جهازك</p>
-          </motion.div>
         </div>
       </section>
 
