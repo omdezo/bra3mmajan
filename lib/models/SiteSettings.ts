@@ -19,6 +19,15 @@ export interface IAnnouncement {
   expiresAt?: Date
 }
 
+export interface ILegacyMigration {
+  status: 'pending' | 'in_progress' | 'completed' | 'failed'
+  lastAttemptAt?: Date
+  completedAt?: Date
+  error?: string
+  stats?: Record<string, number>
+  attempts: number
+}
+
 export interface ISiteSettings extends Document {
   siteName: string
   siteTagline: string
@@ -33,6 +42,7 @@ export interface ISiteSettings extends Document {
   maintenanceMode: boolean
   allowedAgeMin: number
   allowedAgeMax: number
+  legacyMigration?: ILegacyMigration
   createdAt: Date
   updatedAt: Date
 }
@@ -59,6 +69,18 @@ const AnnouncementSchema = new Schema<IAnnouncement>(
   { _id: false }
 )
 
+const LegacyMigrationSchema = new Schema<ILegacyMigration>(
+  {
+    status: { type: String, enum: ['pending', 'in_progress', 'completed', 'failed'], default: 'pending' },
+    lastAttemptAt: { type: Date },
+    completedAt: { type: Date },
+    error: { type: String },
+    stats: { type: Schema.Types.Mixed },
+    attempts: { type: Number, default: 0 },
+  },
+  { _id: false }
+)
+
 const SiteSettingsSchema = new Schema<ISiteSettings>(
   {
     siteName: { type: String, default: 'براعم مجان' },
@@ -74,6 +96,7 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
     maintenanceMode: { type: Boolean, default: false },
     allowedAgeMin: { type: Number, default: 6 },
     allowedAgeMax: { type: Number, default: 12 },
+    legacyMigration: { type: LegacyMigrationSchema, default: () => ({ status: 'pending', attempts: 0 }) },
   },
   { timestamps: true }
 )
