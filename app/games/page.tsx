@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Calculator, Languages, Puzzle, Brain, Trophy, Star, Zap, Heart, Sparkles, ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { VisitorCounter } from "@/components/VisitorCounter";
 
@@ -23,266 +22,297 @@ interface ApiGame {
   externalLink?: string;
 }
 
-const ICON_MAP: Record<string, React.ElementType> = {
-  'الحساب': Calculator,
-  'اللغة العربية': Languages,
-  'الألغاز': Puzzle,
-  'الذاكرة': Brain,
-}
-
-const BG_COLORS = [
-  'bg-gradient-to-br from-blue-100 to-blue-200',
-  'bg-gradient-to-br from-green-100 to-green-200',
-  'bg-gradient-to-br from-purple-100 to-purple-200',
-  'bg-gradient-to-br from-pink-100 to-pink-200',
-  'bg-gradient-to-br from-yellow-100 to-yellow-200',
-]
-
-const GRADIENT_COLORS = [
-  'from-blue-500 to-blue-700',
-  'from-green-500 to-green-700',
-  'from-purple-500 to-purple-700',
-  'from-pink-500 to-pink-700',
-  'from-yellow-500 to-yellow-700',
-]
-
-const STATIC_GAMES: ApiGame[] = []
-
-const achievements = [
-  { id: 1, title: 'بطل المبتدئين', icon: '🏅', unlocked: true },
-  { id: 2, title: 'عبقري الحساب', icon: '🧮', unlocked: true },
-  { id: 3, title: 'ماهر اللغة', icon: '📝', unlocked: false },
-  { id: 4, title: 'محترف الألغاز', icon: '🧩', unlocked: false },
-];
+const CATEGORY_THEMES: Record<string, { gradient: string; badge: string; glow: string }> = {
+  'الحساب':           { gradient: 'from-blue-500 to-indigo-600',    badge: 'bg-blue-100 text-blue-700',    glow: 'shadow-blue-500/30' },
+  'اللغة العربية':    { gradient: 'from-emerald-500 to-teal-600',   badge: 'bg-emerald-100 text-emerald-700', glow: 'shadow-emerald-500/30' },
+  'الألغاز':          { gradient: 'from-purple-500 to-violet-600',  badge: 'bg-purple-100 text-purple-700', glow: 'shadow-purple-500/30' },
+  'الذاكرة':          { gradient: 'from-pink-500 to-rose-600',      badge: 'bg-pink-100 text-pink-700',     glow: 'shadow-pink-500/30' },
+  'العلوم':           { gradient: 'from-amber-500 to-orange-600',   badge: 'bg-amber-100 text-amber-700',   glow: 'shadow-amber-500/30' },
+  'اللغة الإنجليزية': { gradient: 'from-cyan-500 to-blue-600',     badge: 'bg-cyan-100 text-cyan-700',     glow: 'shadow-cyan-500/30' },
+  'أنشطة متنوعة':    { gradient: 'from-rose-500 to-pink-600',      badge: 'bg-rose-100 text-rose-700',     glow: 'shadow-rose-500/30' },
+};
+const DEFAULT_THEME = { gradient: 'from-indigo-500 to-purple-600', badge: 'bg-indigo-100 text-indigo-700', glow: 'shadow-indigo-500/30' };
+const themeOf = (cat: string) => CATEGORY_THEMES[cat] ?? DEFAULT_THEME;
 
 export default function GamesPage() {
-  const [selectedGame, setSelectedGame] = useState<string | null>(null);
-  const [hoveredGame, setHoveredGame] = useState<string | null>(null);
-  const [games, setGames] = useState<ApiGame[]>(STATIC_GAMES);
+  const [games, setGames] = useState<ApiGame[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/games?limit=20')
+    fetch('/api/games?limit=50')
       .then(r => r.json())
-      .then(d => { if (d.success && d.data.length > 0) setGames(d.data) })
+      .then(d => { if (d.success) setGames(d.data) })
       .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
+  const categories = Array.from(new Set(games.map(g => g.category)));
+  const filtered = activeCategory ? games.filter(g => g.category === activeCategory) : games;
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-pink-400 via-purple-400 to-blue-500 relative overflow-hidden" dir="rtl">
+    <main className="min-h-screen bg-gradient-to-b from-amber-100 via-orange-50 to-yellow-100 relative overflow-hidden" dir="rtl">
       <Navbar />
 
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+      {/* Desert background pattern */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {/* Sand dunes */}
+        <div className="absolute bottom-0 left-0 right-0 h-64 opacity-[0.08]">
+          <svg viewBox="0 0 1440 320" className="absolute bottom-0 w-full" preserveAspectRatio="none">
+            <path fill="#92400e" d="M0,224L60,213.3C120,203,240,181,360,186.7C480,192,600,224,720,234.7C840,245,960,235,1080,218.7C1200,203,1320,181,1380,170.7L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z" />
+          </svg>
+          <svg viewBox="0 0 1440 320" className="absolute bottom-0 w-full" preserveAspectRatio="none">
+            <path fill="#b45309" d="M0,288L48,272C96,256,192,224,288,213.3C384,203,480,213,576,229.3C672,245,768,267,864,261.3C960,256,1056,224,1152,213.3C1248,203,1344,213,1392,218.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" />
+          </svg>
+        </div>
+
+        {/* Floating desert elements */}
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute"
-            style={{ left: `${(i * 37 + 13) % 100}%`, top: `${(i * 47 + 23) % 100}%` }}
-            animate={{ y: [0, -30, 0], rotate: [0, 360], scale: [1, 1.2, 1] }}
-            transition={{ duration: (i % 5) + 5, repeat: Infinity, ease: "linear" }}
+            className="absolute text-2xl opacity-20"
+            style={{ left: `${(i * 37 + 13) % 90 + 5}%`, top: `${(i * 47 + 23) % 70 + 10}%` }}
+            animate={{ y: [0, -15, 0] }}
+            transition={{ duration: (i % 3) + 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            {['⭐', '🎮', '🏆', '💎', '🎯'][i % 5]}
+            {['🌴', '🏜️', '⭐', '🌙', '🐪', '🏰', '✨', '🦎'][i]}
           </motion.div>
         ))}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
-        </div>
       </div>
 
-      {/* Header Section */}
-      <section className="relative z-10 pt-8 pb-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <Link href="/#games" className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md text-white font-bold px-6 py-3 rounded-full hover:bg-white/30 transition-all mb-8 group">
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-            <span>العودة للرئيسية</span>
+      {/* Hero */}
+      <section className="relative z-10 pt-8 pb-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <Link href="/#games" className="inline-flex items-center gap-2 text-amber-800 font-bold mb-6 hover:gap-4 transition-all">
+            <span>→</span><span>العودة للرئيسية</span>
           </Link>
 
-          <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
-            <motion.div className="relative" initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 200 }}>
-              <motion.div className="relative w-80 h-80 md:w-96 md:h-96" animate={{ y: [0, -20, 0] }} transition={{ duration: 3, repeat: Infinity }}>
-                <Image src="/assets/فهد.png" alt="فهد" fill className="object-contain drop-shadow-2xl" />
-                <motion.div className="absolute -top-10 -right-10 text-6xl" animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>🎮</motion.div>
-                <motion.div className="absolute -bottom-10 -left-10 text-6xl" animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>⚡</motion.div>
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <motion.div
+              className="relative w-48 h-48 md:w-56 md:h-56 flex-shrink-0"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200 }}
+            >
+              <Image src="/assets/فهد.png" alt="فهد" fill className="object-contain drop-shadow-2xl" />
+              <motion.div
+                className="absolute -top-3 -right-3 text-3xl"
+                animate={{ rotate: [0, 15, -15, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                🎮
               </motion.div>
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full blur-3xl opacity-20 -z-10" />
             </motion.div>
 
             <div className="flex-1 text-center md:text-right">
-              <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                <h1 className="text-6xl md:text-8xl font-black mb-4">
-                  <span className="bg-gradient-to-r from-yellow-300 to-orange-300 text-transparent bg-clip-text drop-shadow-lg">حديقة الألعاب</span>
-                </h1>
-                <div className="inline-block bg-white/20 backdrop-blur-md rounded-3xl px-8 py-4 mb-6">
-                  <p className="text-3xl font-black text-white drop-shadow-lg">مع فَهد 🦁 الشبل النشيط</p>
-                </div>
-                <p className="text-xl md:text-2xl text-white font-bold leading-relaxed mb-8 drop-shadow-lg">
-                  استعد للمغامرة! ألعاب تعليمية تفاعلية ممتعة تنمي المهارات العقلية
-                </p>
-                <div className="flex flex-wrap gap-4 justify-center md:justify-end">
-                  <div className="bg-white/20 backdrop-blur-md rounded-2xl px-6 py-3 border-2 border-white/30">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="w-6 h-6 text-yellow-300" />
-                      <div className="text-right"><p className="text-sm text-white/80">مستواك</p><p className="text-2xl font-black text-white">مبتدئ نشيط</p></div>
-                    </div>
-                  </div>
-                  <div className="bg-white/20 backdrop-blur-md rounded-2xl px-6 py-3 border-2 border-white/30">
-                    <div className="flex items-center gap-2">
-                      <Star className="w-6 h-6 text-yellow-300" />
-                      <div className="text-right"><p className="text-sm text-white/80">الألعاب المتاحة</p><p className="text-2xl font-black text-white">{games.length}</p></div>
-                    </div>
-                  </div>
-                </div>
+              <motion.h1
+                className="text-5xl md:text-7xl font-black mb-3"
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <span className="bg-gradient-to-r from-amber-700 to-orange-600 text-transparent bg-clip-text">
+                  واحة الألعاب
+                </span>
+                <span className="text-4xl md:text-5xl mr-2">🏜️</span>
+              </motion.h1>
+              <motion.p
+                className="text-xl md:text-2xl text-amber-700 font-bold mb-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
+              >
+                مع فَهد — الشبل النشيط 🦁
+              </motion.p>
+              <motion.p
+                className="text-base text-amber-600/80 leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                ألعاب تعليمية ممتعة في واحة الصحراء — اختر لعبتك وابدأ المغامرة!
+              </motion.p>
+              <motion.div
+                className="flex items-center gap-3 justify-center md:justify-end mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <span className="bg-amber-200/60 border border-amber-300 text-amber-800 px-4 py-1.5 rounded-full text-sm font-bold">
+                  🎯 {games.length} لعبة متاحة
+                </span>
               </motion.div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Games Grid */}
-      <section className="relative z-10 py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.h2 className="text-5xl font-black text-center text-white mb-12 drop-shadow-lg" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            اختر لعبتك المفضلة! 🎯
-          </motion.h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            {games.map((game, index) => {
-              const IconComponent = ICON_MAP[game.category] ?? Calculator
-              const bgColor = BG_COLORS[index % BG_COLORS.length]
-              const gradColor = GRADIENT_COLORS[index % GRADIENT_COLORS.length]
-              return (
-                <motion.div
-                  key={game._id}
-                  initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  onHoverStart={() => setHoveredGame(game._id)}
-                  onHoverEnd={() => setHoveredGame(null)}
-                  onClick={() => !game.isExternalLink && setSelectedGame(selectedGame === game._id ? null : game._id)}
-                  className="cursor-pointer group relative"
-                >
-                  <motion.div
-                    className={`${bgColor} rounded-3xl p-8 border-4 border-white shadow-2xl relative overflow-hidden`}
-                    whileHover={{ scale: 1.05, rotate: hoveredGame === game._id ? 2 : 0 }}
-                    whileTap={{ scale: 0.95 }}
+      {/* Category Tabs */}
+      {!loading && games.length > 0 && (
+        <div className="relative z-10 px-4 pb-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex gap-2 flex-wrap justify-center">
+              <button
+                onClick={() => setActiveCategory(null)}
+                className={`px-4 py-2 rounded-full text-sm font-bold transition-all border-2 ${
+                  !activeCategory
+                    ? 'bg-amber-600 text-white border-amber-600 shadow-lg shadow-amber-500/30'
+                    : 'bg-white/70 text-amber-800 border-amber-200 hover:border-amber-400'
+                }`}
+              >
+                الكل ({games.length})
+              </button>
+              {categories.map(cat => {
+                const t = themeOf(cat);
+                const count = games.filter(g => g.category === cat).length;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all border-2 ${
+                      activeCategory === cat
+                        ? `bg-gradient-to-r ${t.gradient} text-white border-transparent shadow-lg ${t.glow}`
+                        : 'bg-white/70 text-amber-800 border-amber-200 hover:border-amber-400'
+                    }`}
                   >
-                    <motion.div className={`absolute inset-0 bg-gradient-to-br ${gradColor} opacity-0 group-hover:opacity-20 transition-opacity`} />
-
-                    {hoveredGame === game._id && (
-                      <>
-                        {[...Array(5)].map((_, i) => (
-                          <motion.div key={i} className="absolute text-3xl" style={{ left: `${(i * 25 + 10) % 90}%`, top: `${(i * 30 + 15) % 80}%` }}
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0], y: [0, -50] }}
-                            transition={{ duration: 1, delay: i * 0.1 }}>✨</motion.div>
-                        ))}
-                      </>
-                    )}
-
-                    <motion.div
-                      className={`w-24 h-24 bg-gradient-to-br ${gradColor} rounded-2xl flex items-center justify-center mb-6 relative`}
-                      animate={hoveredGame === game._id ? { rotate: [0, -10, 10, -10, 0], scale: [1, 1.1, 1] } : {}}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <span className="text-5xl">{game.icon}</span>
-                      <motion.div className={`absolute inset-0 bg-gradient-to-br ${gradColor} rounded-2xl blur-xl opacity-50`} animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 2, repeat: Infinity }} />
-                    </motion.div>
-
-                    <div className="relative z-10">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <h3 className="text-3xl font-black text-gray-800 mb-1">{game.title}</h3>
-                          <p className="text-lg font-bold text-gray-600">{game.category}</p>
-                        </div>
-                        <div className="bg-white px-4 py-2 rounded-full border-2 border-blue-400">
-                          <span className="text-sm font-black text-gray-700">{game.difficulty}</span>
-                        </div>
-                      </div>
-                      <p className="text-lg text-gray-700 leading-relaxed mb-6">{game.description}</p>
-                      <div className="flex items-center gap-6 mb-6">
-                        <div className="flex gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-5 h-5 ${i < game.stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Heart className="w-5 h-5" />
-                          <span className="font-bold">{game.playersCount.toLocaleString('ar')} لاعب</span>
-                        </div>
-                      </div>
-                      {game.isComingSoon ? (
-                        <motion.button
-                          disabled
-                          className={`w-full bg-gray-300 text-gray-500 font-black text-xl px-8 py-4 rounded-2xl shadow-lg border-4 border-white flex items-center justify-center gap-3 cursor-not-allowed`}
-                        >
-                          <span>قريباً 🚀</span>
-                        </motion.button>
-                      ) : game.isExternalLink && game.externalLink ? (
-                        <motion.a
-                          href={game.externalLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`w-full bg-gradient-to-r ${gradColor} text-white font-black text-xl px-8 py-4 rounded-2xl shadow-lg border-4 border-white hover:shadow-2xl transition-all flex items-center justify-center gap-3 group/btn`}
-                          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                        >
-                          <Zap className="w-6 h-6 group-hover/btn:animate-bounce" />
-                          <span>العب الآن!</span>
-                          <span className="text-sm opacity-80">↗</span>
-                        </motion.a>
-                      ) : (
-                        <motion.button
-                          className={`w-full bg-gradient-to-r ${gradColor} text-white font-black text-xl px-8 py-4 rounded-2xl shadow-lg border-4 border-white hover:shadow-2xl transition-all flex items-center justify-center gap-3 group/btn`}
-                          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                        >
-                          <Zap className="w-6 h-6 group-hover/btn:animate-bounce" />
-                          <span>العب الآن!</span>
-                          <Sparkles className="w-6 h-6 group-hover/btn:animate-spin" />
-                        </motion.button>
-                      )}
-                    </div>
-
-                    {game.isComingSoon && (
-                      <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-black text-sm border-4 border-yellow-600 shadow-lg rotate-12">
-                        قريباً 🚀
-                      </div>
-                    )}
-                  </motion.div>
-                </motion.div>
-              )
-            })}
+                    {cat} ({count})
+                  </button>
+                );
+              })}
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* Games Grid */}
+      <section className="relative z-10 py-8 px-4 pb-16">
+        <div className="max-w-6xl mx-auto">
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-white/60 rounded-2xl overflow-hidden animate-pulse">
+                  <div className="aspect-square bg-amber-100" />
+                  <div className="p-3 space-y-2">
+                    <div className="h-4 w-3/4 bg-amber-100 rounded-full" />
+                    <div className="h-3 w-1/2 bg-amber-100 rounded-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <AnimatePresence mode="popLayout">
+                {filtered.map((game, i) => {
+                  const t = themeOf(game.category);
+                  const playUrl = game.isExternalLink && game.externalLink ? game.externalLink : '#';
+
+                  return (
+                    <motion.div
+                      key={game._id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.85 }}
+                      transition={{ delay: i * 0.03 }}
+                      className="group"
+                    >
+                      <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-amber-100">
+                        {/* Icon area */}
+                        <div className={`relative aspect-[4/3] bg-gradient-to-br ${t.gradient} flex items-center justify-center overflow-hidden`}>
+                          {/* Desert pattern overlay */}
+                          <div className="absolute inset-0 opacity-10">
+                            <div className="absolute bottom-0 left-0 right-0">
+                              <svg viewBox="0 0 200 40" className="w-full" preserveAspectRatio="none">
+                                <path fill="white" d="M0,20 Q25,5 50,18 Q75,30 100,15 Q125,5 150,20 Q175,30 200,12 L200,40 L0,40Z" />
+                              </svg>
+                            </div>
+                          </div>
+
+                          <motion.span
+                            className="text-6xl sm:text-7xl drop-shadow-lg relative z-10"
+                            whileHover={{ scale: 1.2, rotate: [0, -10, 10, 0] }}
+                            transition={{ duration: 0.4 }}
+                          >
+                            {game.icon}
+                          </motion.span>
+
+                          {/* Play overlay on hover */}
+                          {!game.isComingSoon && playUrl !== '#' && (
+                            <a
+                              href={playUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all duration-300 z-20"
+                            >
+                              <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-xl">
+                                <span className="text-amber-600 text-xl font-black mr-[-2px]">▶</span>
+                              </div>
+                            </a>
+                          )}
+
+                          {/* Category badge */}
+                          <div className="absolute top-2 right-2 z-10">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-sm ${t.badge}`}>
+                              {game.category}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Info */}
+                        <div className="p-3">
+                          <h3 className="text-sm font-black text-gray-800 leading-snug mb-1 line-clamp-2">{game.title}</h3>
+                          <p className="text-xs text-gray-400 line-clamp-1 mb-3">{game.description}</p>
+
+                          {game.isComingSoon ? (
+                            <div className="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-xs font-bold text-center">
+                              قريباً 🚀
+                            </div>
+                          ) : playUrl !== '#' ? (
+                            <a
+                              href={playUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`block w-full py-2 bg-gradient-to-r ${t.gradient} text-white rounded-xl text-xs font-bold text-center hover:shadow-lg transition-all active:scale-95`}
+                            >
+                              العب الآن 🎮
+                            </a>
+                          ) : (
+                            <div className="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-xs font-bold text-center">
+                              غير متاح
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </motion.div>
+          )}
         </div>
       </section>
 
-      {/* Achievements Section */}
-      <section className="relative z-10 py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border-4 border-white/30">
-            <h2 className="text-4xl font-black text-white mb-8 text-center flex items-center justify-center gap-4">
-              <Trophy className="w-10 h-10 text-yellow-300" /><span>إنجازاتك 🏆</span>
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {achievements.map((a) => (
-                <motion.div
-                  key={a.id}
-                  className={`${a.unlocked ? 'bg-gradient-to-br from-yellow-400 to-orange-400' : 'bg-gray-400'} rounded-2xl p-6 text-center relative overflow-hidden border-4 border-white`}
-                  whileHover={{ scale: a.unlocked ? 1.1 : 1 }}
-                  initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: a.id * 0.1 }}
-                >
-                  {!a.unlocked && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-4xl">🔒</span></div>}
-                  <div className="text-5xl mb-3">{a.icon}</div>
-                  <p className="text-sm font-black text-white">{a.title}</p>
-                  {a.unlocked && <motion.div className="absolute top-2 right-2 text-2xl" animate={{ rotate: [0, 360] }} transition={{ duration: 2, repeat: Infinity }}>✨</motion.div>}
-                </motion.div>
-              ))}
-            </div>
-          </div>
+      {/* Fahd's tip */}
+      <section className="relative z-10 py-8 px-4">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-br from-amber-600 to-orange-700 rounded-3xl p-6 md:p-8 text-center border-4 border-amber-300 shadow-2xl"
+          >
+            <span className="text-5xl block mb-3">🦁</span>
+            <h3 className="text-2xl font-black text-white mb-2">نصيحة فهد</h3>
+            <p className="text-amber-100 font-bold text-lg leading-relaxed">
+              العب وتعلّم كل يوم شيئاً جديداً! كل لعبة هنا تقوّي عقلك وتنمّي مهاراتك.
+              <br />
+              <span className="text-yellow-300">استمتع بالتعلم في واحة الألعاب! 🌴</span>
+            </p>
+          </motion.div>
         </div>
       </section>
 
       {/* Visitor Counter */}
-      <section className="py-8 px-4 bg-gradient-to-b from-orange-100 to-amber-100">
+      <section className="relative z-10 py-8 px-4">
         <div className="max-w-6xl mx-auto flex justify-center">
           <VisitorCounter pageName="الألعاب" pageRoute="/games" />
         </div>
