@@ -33,13 +33,7 @@ const SECTION_META: Record<string, { icon: string; desc: string }> = {
 }
 const theme = (cat: string) => THEMES[cat] ?? DEFAULT_THEME
 
-const STATIC: ApiTreasure[] = [
-  { _id:'1', title:'ركن الإبداع',    icon:'🎨', description:'تلوين، رسم، أشغال يدوية، فنون عُمانية تقليدية', category:'ركن الإبداع',   color:'#10B981', isComingSoon:true },
-  { _id:'2', title:'كنوز عُمان',     icon:'🏰', description:'القلاع والحصون، الولايات، الأزياء التقليدية',    category:'كنوز عُمان',    color:'#F59E0B', isComingSoon:true },
-  { _id:'3', title:'ركن الأناشيد',  icon:'🎵', description:'أناشيد وطنية، تعليمية، إسلامية للأطفال',         category:'ركن الأناشيد',  color:'#EC4899', isComingSoon:true },
-  { _id:'4', title:'ركن المدرسة',   icon:'🎓', description:'شروحات للمنهج العُماني، تمارين تفاعلية',          category:'ركن المدرسة',   color:'#8B5CF6', isComingSoon:true },
-  { _id:'5', title:'ركن الأهل',     icon:'👨‍👩‍👧', description:'نصائح تربوية، متابعة تقدم الطفل',               category:'ركن الأهل',     color:'#3B82F6', isComingSoon:true },
-]
+const STATIC: ApiTreasure[] = []
 
 const isCanva  = (u: string) => u.includes('canva.com')
 const isGDrive = (u: string) => u.includes('drive.google.com')

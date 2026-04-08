@@ -43,12 +43,7 @@ const CATEGORY_BADGE: Record<string, string> = {
   'مغامرات مصورة': 'bg-purple-100 text-purple-700',
 };
 
-const STATIC_STORIES: ApiStory[] = [
-  { _id: '1', title: "حكايات عُمانية قديمة", icon: "🌍", description: "قصص من التراث العُماني الأصيل", category: "حكايات عُمانية", color: "#F59E0B", isComingSoon: true },
-  { _id: '2', title: "قصص الأنبياء", icon: "📖", description: "تعلم من قصص الأنبياء عليهم السلام", category: "قصص الأنبياء", color: "#10B981", isComingSoon: true },
-  { _id: '3', title: "قصص أخلاقية", icon: "💚", description: "قصص تعلمك القيم والأخلاق الحميدة", category: "قصص أخلاقية", color: "#EC4899", isComingSoon: true },
-  { _id: '4', title: "مغامرات مصورة", icon: "✨", description: "مغامرات شيقة ومثيرة", category: "مغامرات مصورة", color: "#8B5CF6", isComingSoon: true },
-];
+const STATIC_STORIES: ApiStory[] = [];
 
 export default function StoriesPage() {
   const [stories, setStories] = useState<ApiStory[]>(STATIC_STORIES);

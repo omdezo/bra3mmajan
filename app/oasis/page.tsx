@@ -39,12 +39,7 @@ const GRADIENT_COLORS = [
   "from-teal-500 to-teal-700", "from-emerald-500 to-emerald-700",
 ];
 
-const STATIC_OASIS: ApiOasis[] = [
-  { _id: '1', title: "تحفيظ جزء عمّ", icon: "📖", arabicText: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", description: "احفظ القرآن الكريم بطريقة سهلة وممتعة", category: "حفظ القرآن", color: "#10B981", isComingSoon: true } as ApiOasis & { description: string },
-  { _id: '2', title: "أدعية الطفل المسلم", icon: "🤲", arabicText: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً", description: "تعلم الأدعية اليومية والمأثورة", category: "أدعية إسلامية", color: "#3B82F6", isComingSoon: true } as ApiOasis & { description: string },
-  { _id: '3', title: "أذكار الصباح والمساء", icon: "☀️", arabicText: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ", description: "احفظ أذكارك اليومية", category: "أذكار الصباح والمساء", color: "#F59E0B", isComingSoon: true } as ApiOasis & { description: string },
-  { _id: '4', title: "آداب إسلامية", icon: "🌙", arabicText: "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ", description: "تعلم الآداب الإسلامية الجميلة", category: "آداب إسلامية", color: "#8B5CF6", isComingSoon: true } as ApiOasis & { description: string },
-];
+const STATIC_OASIS: ApiOasis[] = [];
 
 export default function OasisPage() {
   const [items, setItems] = useState<ApiOasis[]>(STATIC_OASIS);

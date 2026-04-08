@@ -46,12 +46,7 @@ const GRADIENT_COLORS = [
   'from-yellow-500 to-yellow-700',
 ]
 
-const STATIC_GAMES: ApiGame[] = [
-  { _id: '1', title: 'ألعاب الحساب', description: 'تعلم الأرقام والعمليات الحسابية بطريقة ممتعة مع فهد!', category: 'الحساب', difficulty: 'سهل', icon: '🔢', color: '#3B82F6', stars: 3, playersCount: 1234, isComingSoon: true, isExternalLink: false },
-  { _id: '2', title: 'ألعاب اللغة العربية', description: 'اكتشف جمال اللغة العربية من خلال الألعاب التفاعلية!', category: 'اللغة العربية', difficulty: 'متوسط', icon: '📝', color: '#10B981', stars: 4, playersCount: 987, isComingSoon: true, isExternalLink: false },
-  { _id: '3', title: 'الألغاز الذكية', description: 'حل الألغاز وطور مهارات التفكير والمنطق!', category: 'الألغاز', difficulty: 'صعب', icon: '🧩', color: '#8B5CF6', stars: 5, playersCount: 756, isComingSoon: true, isExternalLink: false },
-  { _id: '4', title: 'ألعاب الذاكرة', description: 'قوِّ ذاكرتك وتركيزك مع تحديات مثيرة!', category: 'الذاكرة', difficulty: 'سهل', icon: '🧠', color: '#EC4899', stars: 3, playersCount: 1456, isComingSoon: true, isExternalLink: false },
-]
+const STATIC_GAMES: ApiGame[] = []
 
 const achievements = [
   { id: 1, title: 'بطل المبتدئين', icon: '🏅', unlocked: true },

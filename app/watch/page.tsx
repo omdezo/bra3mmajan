@@ -47,12 +47,7 @@ function ytThumb(id: string) {
   return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
 }
 
-const STATIC_VIDEOS: ApiItem[] = [
-  { _id: '1', title: "كرتون مغامرات براعم مجان", icon: "🎬", description: "شاهد أجمل المغامرات مع أبطال براعم مجان", category: "رسوم متحركة", color: "#8B5CF6", isComingSoon: true },
-  { _id: '2', title: "أناشيد عُمانية", icon: "🎵", description: "استمع لأجمل الأناشيد الوطنية والتعليمية", category: "أناشيد", color: "#EC4899", isComingSoon: true },
-  { _id: '3', title: "فيديوهات تعليمية", icon: "📚", description: "تعلم مع الفيديوهات التعليمية الشيقة", category: "فيديوهات تعليمية", color: "#3B82F6", isComingSoon: true },
-  { _id: '4', title: "برامج أطفال", icon: "📺", description: "برامج ممتعة ومفيدة للأطفال", category: "برامج أطفال", color: "#10B981", isComingSoon: true },
-];
+const STATIC_VIDEOS: ApiItem[] = [];
 
 export default function WatchPage() {
   const [items, setItems] = useState<ApiItem[]>(STATIC_VIDEOS);
