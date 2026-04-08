@@ -14,20 +14,31 @@ interface ApiTreasure {
 }
 
 /* ── Category themes ─────────────────────────────────────────── */
-const THEMES: Record<string, { grad: string; pill: string; glow: string; accent: string }> = {
-  'ركن الإبداع':    { grad: 'from-pink-400 to-rose-500',    pill: 'bg-pink-100 text-pink-700',    glow: 'rgba(236,72,153,.3)',  accent: '#ec4899' },
-  'كنوز عُمانية':  { grad: 'from-amber-400 to-orange-500', pill: 'bg-amber-100 text-amber-700',  glow: 'rgba(245,158,11,.3)', accent: '#f59e0b' },
-  'أغانٍ':         { grad: 'from-purple-400 to-violet-500', pill: 'bg-purple-100 text-purple-700',glow: 'rgba(139,92,246,.3)', accent: '#8b5cf6' },
-  'أساليب تعليمية':{ grad: 'from-blue-400 to-cyan-500',    pill: 'bg-blue-100 text-blue-700',    glow: 'rgba(59,130,246,.3)', accent: '#3b82f6' },
+const THEMES: Record<string, { grad: string; pill: string; glow: string; accent: string; bg: string; border: string }> = {
+  'ركن الإبداع':   { grad: 'from-emerald-400 to-green-500',  pill: 'bg-emerald-100 text-emerald-700', glow: 'rgba(16,185,129,.3)', accent: '#10b981', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  'كنوز عُمان':    { grad: 'from-amber-400 to-orange-500',   pill: 'bg-amber-100 text-amber-700',     glow: 'rgba(245,158,11,.3)', accent: '#f59e0b', bg: 'bg-amber-50',   border: 'border-amber-200' },
+  'ركن الأناشيد':  { grad: 'from-pink-400 to-rose-500',      pill: 'bg-pink-100 text-pink-700',       glow: 'rgba(236,72,153,.3)', accent: '#ec4899', bg: 'bg-pink-50',    border: 'border-pink-200' },
+  'ركن المدرسة':   { grad: 'from-purple-400 to-violet-500',  pill: 'bg-purple-100 text-purple-700',   glow: 'rgba(139,92,246,.3)', accent: '#8b5cf6', bg: 'bg-purple-50',  border: 'border-purple-200' },
+  'ركن الأهل':     { grad: 'from-blue-400 to-cyan-500',      pill: 'bg-blue-100 text-blue-700',       glow: 'rgba(59,130,246,.3)', accent: '#3b82f6', bg: 'bg-blue-50',    border: 'border-blue-200' },
 }
-const DEFAULT_THEME = { grad: 'from-indigo-400 to-violet-500', pill: 'bg-indigo-100 text-indigo-700', glow: 'rgba(99,102,241,.3)', accent: '#6366f1' }
+const DEFAULT_THEME = { grad: 'from-indigo-400 to-violet-500', pill: 'bg-indigo-100 text-indigo-700', glow: 'rgba(99,102,241,.3)', accent: '#6366f1', bg: 'bg-indigo-50', border: 'border-indigo-200' }
+
+const SECTION_ORDER = ['ركن الإبداع', 'كنوز عُمان', 'ركن الأناشيد', 'ركن المدرسة', 'ركن الأهل']
+const SECTION_META: Record<string, { icon: string; desc: string }> = {
+  'ركن الإبداع':  { icon: '🎨', desc: 'تلوين، رسم، أعمال يدوية، فنون عُمانية تقليدية' },
+  'كنوز عُمان':   { icon: '🏰', desc: 'الفلج والحصون، الأزياء التقليدية، الحرف اليدوية' },
+  'ركن الأناشيد': { icon: '🎵', desc: 'أناشيد وطنية، تعليمية، إسلامية للأطفال' },
+  'ركن المدرسة':  { icon: '🎓', desc: 'شروحات المنهج العُماني، تمارين تفاعلية، مراجعات' },
+  'ركن الأهل':    { icon: '👨‍👩‍👧', desc: 'نصائح تربوية، متابعة تقدم الطفل، إعدادات الأمان' },
+}
 const theme = (cat: string) => THEMES[cat] ?? DEFAULT_THEME
 
 const STATIC: ApiTreasure[] = [
-  { _id:'1', title:'ركن الإبداع',     icon:'🎨', description:'تلوين، رسم، أشغال يدوية، فنون عُمانية تقليدية', category:'ركن الإبداع',    color:'#EC4899', isComingSoon:true },
-  { _id:'2', title:'كنوز عُمان',      icon:'🏰', description:'القلاع والحصون، الولايات، الأزياء التقليدية',    category:'كنوز عُمانية',  color:'#F59E0B', isComingSoon:true },
-  { _id:'3', title:'ركن الأناشيد',   icon:'🎵', description:'أناشيد وطنية، تعليمية، إسلامية للأطفال',         category:'أغانٍ',         color:'#8B5CF6', isComingSoon:true },
-  { _id:'4', title:'تقنيات التعليم', icon:'🎓', description:'شروحات للمنهج العُماني، تمارين تفاعلية',           category:'أساليب تعليمية',color:'#3B82F6', isComingSoon:true },
+  { _id:'1', title:'ركن الإبداع',    icon:'🎨', description:'تلوين، رسم، أشغال يدوية، فنون عُمانية تقليدية', category:'ركن الإبداع',   color:'#10B981', isComingSoon:true },
+  { _id:'2', title:'كنوز عُمان',     icon:'🏰', description:'القلاع والحصون، الولايات، الأزياء التقليدية',    category:'كنوز عُمان',    color:'#F59E0B', isComingSoon:true },
+  { _id:'3', title:'ركن الأناشيد',  icon:'🎵', description:'أناشيد وطنية، تعليمية، إسلامية للأطفال',         category:'ركن الأناشيد',  color:'#EC4899', isComingSoon:true },
+  { _id:'4', title:'ركن المدرسة',   icon:'🎓', description:'شروحات للمنهج العُماني، تمارين تفاعلية',          category:'ركن المدرسة',   color:'#8B5CF6', isComingSoon:true },
+  { _id:'5', title:'ركن الأهل',     icon:'👨‍👩‍👧', description:'نصائح تربوية، متابعة تقدم الطفل',               category:'ركن الأهل',     color:'#3B82F6', isComingSoon:true },
 ]
 
 const isCanva  = (u: string) => u.includes('canva.com')
@@ -213,7 +224,6 @@ export default function VarietyPage() {
   const [loading, setLoading] = useState(true)
   const [modal, setModal]     = useState<ApiTreasure | null>(null)
   const [pdfItem, setPdfItem] = useState<ApiTreasure | null>(null)
-  const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/variety?limit=50')
@@ -223,10 +233,11 @@ export default function VarietyPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const categories = ['الكل', ...Array.from(new Set(items.map(i => i.category)))]
-  const filtered = activeCategory && activeCategory !== 'الكل'
-    ? items.filter(i => i.category === activeCategory)
-    : items
+  // Group by section
+  const grouped: Record<string, ApiTreasure[]> = {}
+  for (const sec of SECTION_ORDER) grouped[sec] = []
+  items.forEach(i => { if (grouped[i.category]) grouped[i.category].push(i); else if (!grouped[i.category]) grouped[i.category] = [i] })
+
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-amber-50 via-yellow-50 to-orange-50" dir="rtl">
@@ -266,33 +277,10 @@ export default function VarietyPage() {
         </div>
       </section>
 
-      {/* ── Category filter tabs ── */}
-      {!loading && items.length > 0 && (
-        <div className="px-4 pb-2">
-          <div className="max-w-5xl mx-auto flex gap-2 flex-wrap">
-            {categories.map(cat => {
-              const t = cat === 'الكل' ? null : theme(cat)
-              const active = (activeCategory ?? 'الكل') === cat
-              return (
-                <button key={cat} onClick={() => setActiveCategory(cat === 'الكل' ? null : cat)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border-2 ${
-                    active
-                      ? `text-white border-transparent shadow-md ${t ? `bg-gradient-to-r ${t.grad}` : 'bg-amber-500'}`
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300'
-                  }`}>
-                  {cat}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── Grid ── */}
+      {/* ── Sections by category ── */}
       <section className="py-8 px-4 pb-20">
         <div className="max-w-5xl mx-auto">
           {loading ? (
-            /* Skeleton */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1,2,3,4].map(i => (
                 <div key={i} className="bg-white rounded-3xl overflow-hidden shadow-md animate-pulse">
@@ -307,24 +295,59 @@ export default function VarietyPage() {
               ))}
             </div>
           ) : (
-            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="popLayout">
-                {filtered.map((item, idx) => (
-                  <motion.div key={item._id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ delay: idx * 0.04 }}>
-                    <TreasureCard
-                      item={item}
-                      onOpenPdf={setPdfItem}
-                      onOpenModal={setModal}
-                    />
+            <div className="space-y-12">
+              {SECTION_ORDER.map((sec, si) => {
+                const t = theme(sec)
+                const meta = SECTION_META[sec]
+                const sectionItems = grouped[sec] || []
+
+                return (
+                  <motion.div
+                    key={sec}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: si * 0.08 }}
+                  >
+                    {/* Section header */}
+                    <div className={`${t.bg} rounded-2xl p-5 border ${t.border} mb-5`}>
+                      <div className="flex items-center gap-4">
+                        <div className={`w-14 h-14 bg-gradient-to-br ${t.grad} rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0`}>
+                          <span className="text-2xl">{meta?.icon || '✨'}</span>
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-black text-gray-800">{sec}</h3>
+                          <p className="text-sm text-gray-500 font-medium">{meta?.desc}</p>
+                        </div>
+                        <div className={`mr-auto px-3 py-1 rounded-full text-xs font-bold ${t.pill}`}>
+                          {sectionItems.length} {sectionItems.length === 1 ? 'عنصر' : 'عناصر'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Items grid */}
+                    {sectionItems.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {sectionItems.map((item, idx) => (
+                          <motion.div key={item._id}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: idx * 0.04 }}>
+                            <TreasureCard item={item} onOpenPdf={setPdfItem} onOpenModal={setModal} />
+                          </motion.div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className={`${t.bg} rounded-2xl p-8 border-2 border-dashed ${t.border} text-center`}>
+                        <span className="text-4xl mb-2 block">{meta?.icon || '📭'}</span>
+                        <p className="text-gray-400 font-bold">قريباً — سيتم إضافة المحتوى</p>
+                      </div>
+                    )}
                   </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
+                )
+              })}
+            </div>
           )}
         </div>
       </section>

@@ -15,12 +15,12 @@ interface Treasure {
 }
 
 const EMPTY: Omit<Treasure, '_id'> = {
-  title: '', description: '', content: '', category: 'كنوز عُمانية',
+  title: '', description: '', content: '', category: 'ركن المدرسة',
   icon: '💎', color: '#F59E0B', imageUrl: '', audioUrl: '', videoUrl: '', pptUrl: '',
   isActive: true, isComingSoon: false, isFeatured: false, order: 0,
 }
 
-const CATEGORIES = ['ركن الإبداع', 'كنوز عُمانية', 'أغانٍ', 'أساليب تعليمية'].map(v => ({ value: v, label: v }))
+const CATEGORIES = ['ركن الإبداع', 'كنوز عُمان', 'ركن الأناشيد', 'ركن المدرسة', 'ركن الأهل'].map(v => ({ value: v, label: v }))
 
 
 export default function VarietyAdminPage() {
