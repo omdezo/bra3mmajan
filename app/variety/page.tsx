@@ -23,7 +23,7 @@ const THEMES: Record<string, { grad: string; pill: string; glow: string; accent:
 }
 const DEFAULT_THEME = { grad: 'from-indigo-400 to-violet-500', pill: 'bg-indigo-100 text-indigo-700', glow: 'rgba(99,102,241,.3)', accent: '#6366f1', bg: 'bg-indigo-50', border: 'border-indigo-200' }
 
-const SECTION_ORDER = ['ركن الإبداع', 'كنوز عُمان', 'ركن الأناشيد', 'ركن المدرسة', 'ركن الأهل']
+const SECTION_ORDER = ['ركن المدرسة', 'ركن الإبداع', 'كنوز عُمان', 'ركن الأناشيد', 'ركن الأهل']
 const SECTION_META: Record<string, { icon: string; desc: string }> = {
   'ركن الإبداع':  { icon: '🎨', desc: 'تلوين، رسم، أعمال يدوية، فنون عُمانية تقليدية' },
   'كنوز عُمان':   { icon: '🏰', desc: 'الفلج والحصون، الأزياء التقليدية، الحرف اليدوية' },
