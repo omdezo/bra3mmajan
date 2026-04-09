@@ -15,21 +15,19 @@ interface ApiTreasure {
 
 /* ── Category themes ─────────────────────────────────────────── */
 const THEMES: Record<string, { grad: string; pill: string; glow: string; accent: string; bg: string; border: string }> = {
-  'ركن الإبداع':   { grad: 'from-emerald-400 to-green-500',  pill: 'bg-emerald-100 text-emerald-700', glow: 'rgba(16,185,129,.3)', accent: '#10b981', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-  'كنوز عُمان':    { grad: 'from-amber-400 to-orange-500',   pill: 'bg-amber-100 text-amber-700',     glow: 'rgba(245,158,11,.3)', accent: '#f59e0b', bg: 'bg-amber-50',   border: 'border-amber-200' },
-  'ركن الأناشيد':  { grad: 'from-pink-400 to-rose-500',      pill: 'bg-pink-100 text-pink-700',       glow: 'rgba(236,72,153,.3)', accent: '#ec4899', bg: 'bg-pink-50',    border: 'border-pink-200' },
-  'ركن المدرسة':   { grad: 'from-purple-400 to-violet-500',  pill: 'bg-purple-100 text-purple-700',   glow: 'rgba(139,92,246,.3)', accent: '#8b5cf6', bg: 'bg-purple-50',  border: 'border-purple-200' },
-  'ركن الأهل':     { grad: 'from-blue-400 to-cyan-500',      pill: 'bg-blue-100 text-blue-700',       glow: 'rgba(59,130,246,.3)', accent: '#3b82f6', bg: 'bg-blue-50',    border: 'border-blue-200' },
+  'ركن الإبداع':  { grad: 'from-emerald-400 to-green-500',  pill: 'bg-emerald-100 text-emerald-700', glow: 'rgba(16,185,129,.3)', accent: '#10b981', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  'كنوز عُمان':   { grad: 'from-amber-400 to-orange-500',   pill: 'bg-amber-100 text-amber-700',     glow: 'rgba(245,158,11,.3)', accent: '#f59e0b', bg: 'bg-amber-50',   border: 'border-amber-200' },
+  'ركن المدرسة':  { grad: 'from-purple-400 to-violet-500',  pill: 'bg-purple-100 text-purple-700',   glow: 'rgba(139,92,246,.3)', accent: '#8b5cf6', bg: 'bg-purple-50',  border: 'border-purple-200' },
+  'ركن الأهل':    { grad: 'from-blue-400 to-cyan-500',      pill: 'bg-blue-100 text-blue-700',       glow: 'rgba(59,130,246,.3)', accent: '#3b82f6', bg: 'bg-blue-50',    border: 'border-blue-200' },
 }
 const DEFAULT_THEME = { grad: 'from-indigo-400 to-violet-500', pill: 'bg-indigo-100 text-indigo-700', glow: 'rgba(99,102,241,.3)', accent: '#6366f1', bg: 'bg-indigo-50', border: 'border-indigo-200' }
 
-const SECTION_ORDER = ['ركن المدرسة', 'ركن الإبداع', 'كنوز عُمان', 'ركن الأناشيد', 'ركن الأهل']
+const SECTION_ORDER = ['ركن المدرسة', 'ركن الإبداع', 'كنوز عُمان', 'ركن الأهل']
 const SECTION_META: Record<string, { icon: string; desc: string }> = {
-  'ركن الإبداع':  { icon: '🎨', desc: 'تلوين، رسم، أعمال يدوية، فنون عُمانية تقليدية' },
-  'كنوز عُمان':   { icon: '🏰', desc: 'الفلج والحصون، الأزياء التقليدية، الحرف اليدوية' },
-  'ركن الأناشيد': { icon: '🎵', desc: 'أناشيد وطنية، تعليمية، إسلامية للأطفال' },
-  'ركن المدرسة':  { icon: '🎓', desc: 'شروحات المنهج العُماني، تمارين تفاعلية، مراجعات' },
-  'ركن الأهل':    { icon: '👨‍👩‍👧', desc: 'نصائح تربوية، متابعة تقدم الطفل، إعدادات الأمان' },
+  'ركن الإبداع': { icon: '🎨', desc: 'تلوين، رسم، أعمال يدوية، فنون عُمانية تقليدية' },
+  'كنوز عُمان':  { icon: '🏰', desc: 'الفلج والحصون، الأزياء التقليدية، الحرف اليدوية' },
+  'ركن المدرسة': { icon: '🎓', desc: 'شروحات المنهج العُماني، تمارين تفاعلية، مراجعات' },
+  'ركن الأهل':   { icon: '👨‍👩‍👧', desc: 'نصائح تربوية، متابعة تقدم الطفل، إعدادات الأمان' },
 }
 const theme = (cat: string) => THEMES[cat] ?? DEFAULT_THEME
 

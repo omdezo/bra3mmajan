@@ -3,7 +3,7 @@
  */
 import mongoose, { Document, Schema, Model } from 'mongoose'
 
-export type TreasureCategory = 'ركن الإبداع' | 'كنوز عُمان' | 'ركن الأناشيد' | 'ركن المدرسة' | 'ركن الأهل'
+export type TreasureCategory = 'ركن الإبداع' | 'كنوز عُمان' | 'ركن المدرسة' | 'ركن الأهل'
 
 export interface ITreasure extends Document {
   title: string
@@ -31,7 +31,7 @@ const TreasureSchema = new Schema<ITreasure>(
     content: { type: String },
     category: {
       type: String,
-      enum: ['ركن الإبداع', 'كنوز عُمان', 'ركن الأناشيد', 'ركن المدرسة', 'ركن الأهل'],
+      enum: ['ركن الإبداع', 'كنوز عُمان', 'ركن المدرسة', 'ركن الأهل'],
       required: true,
     },
     icon: { type: String, default: '💎' },

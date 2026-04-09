@@ -20,7 +20,7 @@ const EMPTY: Omit<Treasure, '_id'> = {
   isActive: true, isComingSoon: false, isFeatured: false, order: 0,
 }
 
-const CATEGORIES = ['ركن الإبداع', 'كنوز عُمان', 'ركن الأناشيد', 'ركن المدرسة', 'ركن الأهل'].map(v => ({ value: v, label: v }))
+const CATEGORIES = ['ركن الإبداع', 'كنوز عُمان', 'ركن المدرسة', 'ركن الأهل'].map(v => ({ value: v, label: v }))
 
 
 export default function VarietyAdminPage() {
