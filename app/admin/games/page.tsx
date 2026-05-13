@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import AdminShell from '@/components/admin/AdminShell'
 import DataTable, { Column } from '@/components/admin/DataTable'
 import Modal from '@/components/admin/Modal'
@@ -30,7 +30,7 @@ const EMPTY: Omit<Game, '_id'> = {
   isActive: true, isComingSoon: false, order: 0,
 }
 
-const CATEGORIES = ['الحساب', 'اللغة العربية', 'الألغاز', 'الذاكرة', 'العلوم', 'التراث'].map(v => ({ value: v, label: v }))
+const DEFAULT_CATEGORIES = ['الحساب', 'اللغة العربية', 'الألغاز', 'الذاكرة', 'العلوم', 'التراث', 'اللغة الإنجليزية', 'أنشطة متنوعة']
 const DIFFICULTIES = ['سهل', 'متوسط', 'صعب'].map(v => ({ value: v, label: v }))
 
 export default function GamesAdminPage() {
@@ -55,6 +55,13 @@ export default function GamesAdminPage() {
   useEffect(() => { loadGames() }, [loadGames])
 
   const { reorder } = useReorder(games, setGames, '/api/games')
+
+  // Build category suggestions: defaults + categories already in use (deduped)
+  const categorySuggestions = useMemo(() => {
+    const inUse = new Set(games.map(g => g.category).filter(Boolean))
+    DEFAULT_CATEGORIES.forEach(c => inUse.add(c))
+    return Array.from(inUse).sort((a, b) => a.localeCompare(b, 'ar'))
+  }, [games])
 
   const columns: Column<Game>[] = [
     { key: 'icon', label: '', width: '40px', render: v => <span className="text-2xl">{String(v)}</span> },
@@ -156,8 +163,16 @@ export default function GamesAdminPage() {
             <Textarea value={form.description} onChange={e => upd('description', e.target.value)} rows={2} placeholder="وصف مختصر للعبة" />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="الفئة" required>
-              <Select value={form.category} onChange={e => upd('category', e.target.value)} options={CATEGORIES} />
+            <FormField label="الفئة" required hint="اختر من القائمة أو اكتب فئة جديدة">
+              <Input
+                value={form.category}
+                onChange={e => upd('category', e.target.value)}
+                placeholder="مثال: الحساب، الألغاز، ..."
+                list="game-categories"
+              />
+              <datalist id="game-categories">
+                {categorySuggestions.map(c => <option key={c} value={c} />)}
+              </datalist>
             </FormField>
             <FormField label="المستوى">
               <Select value={form.difficulty} onChange={e => upd('difficulty', e.target.value)} options={DIFFICULTIES} />

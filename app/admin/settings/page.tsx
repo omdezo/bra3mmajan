@@ -7,10 +7,15 @@ interface NavbarItem {
   label: string; href: string; icon: string; gradient: string; order: number; isActive: boolean
 }
 
+interface ContactInfo {
+  email: string; phone: string; whatsapp?: string; address?: string; workingHours?: string
+}
+
 interface SiteSettings {
   siteName: string; siteTagline: string; footerText: string
   maintenanceMode: boolean; navbarItems: NavbarItem[]
   announcements: Array<{ text: string; color: string; isActive: boolean }>
+  contact: ContactInfo
 }
 
 export default function SettingsAdminPage() {
@@ -18,7 +23,7 @@ export default function SettingsAdminPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
-  const [tab, setTab] = useState<'general' | 'navbar' | 'announcements'>('general')
+  const [tab, setTab] = useState<'general' | 'contact' | 'navbar' | 'announcements'>('general')
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
@@ -78,9 +83,10 @@ export default function SettingsAdminPage() {
       {toast && <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-800 border border-white/10 text-white px-4 py-2 rounded-xl text-sm shadow-lg">{toast}</div>}
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 flex-wrap">
         {[
           { key: 'general', label: 'عام' },
+          { key: 'contact', label: '📞 معلومات التواصل' },
           { key: 'navbar', label: 'شريط التنقل' },
           { key: 'announcements', label: 'الإعلانات' },
         ].map(t => (
@@ -114,6 +120,67 @@ export default function SettingsAdminPage() {
                 onChange={v => upd('maintenanceMode', v)}
                 label="وضع الصيانة (يخفي الموقع عن الزوار)"
               />
+            </div>
+          </div>
+        )}
+
+        {tab === 'contact' && (
+          <div className="space-y-5">
+            <p className="text-xs text-slate-400 mb-2">معلومات التواصل التي ستظهر في صفحة &quot;اتصل بنا&quot;</p>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="البريد الإلكتروني" hint="مثال: contact@baraemmajan.om">
+                <Input
+                  type="email"
+                  value={settings.contact?.email ?? ''}
+                  onChange={e => upd('contact', { ...(settings.contact ?? {}), email: e.target.value })}
+                  dir="ltr"
+                  placeholder="example@domain.com"
+                />
+              </FormField>
+              <FormField label="رقم الهاتف (عُمان)" hint="مثال: +968 9123 4567">
+                <Input
+                  value={settings.contact?.phone ?? ''}
+                  onChange={e => upd('contact', { ...(settings.contact ?? {}), phone: e.target.value })}
+                  dir="ltr"
+                  placeholder="+968 ..."
+                />
+              </FormField>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="رقم واتساب (اختياري)" hint="بدون + أو علامات، مثال: 96891234567">
+                <Input
+                  value={settings.contact?.whatsapp ?? ''}
+                  onChange={e => upd('contact', { ...(settings.contact ?? {}), whatsapp: e.target.value })}
+                  dir="ltr"
+                  placeholder="96891234567"
+                />
+              </FormField>
+              <FormField label="ساعات العمل">
+                <Input
+                  value={settings.contact?.workingHours ?? ''}
+                  onChange={e => upd('contact', { ...(settings.contact ?? {}), workingHours: e.target.value })}
+                  placeholder="من الأحد إلى الخميس · 8 صباحاً - 4 مساءً"
+                />
+              </FormField>
+            </div>
+            <FormField label="العنوان (اختياري)">
+              <Input
+                value={settings.contact?.address ?? ''}
+                onChange={e => upd('contact', { ...(settings.contact ?? {}), address: e.target.value })}
+                placeholder="سلطنة عُمان"
+              />
+            </FormField>
+
+            {/* Preview */}
+            <div className="mt-6 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-5">
+              <p className="text-xs text-slate-400 mb-3">👁 معاينة سريعة</p>
+              <div className="space-y-2 text-sm">
+                {settings.contact?.email && <p className="text-slate-200">📧 {settings.contact.email}</p>}
+                {settings.contact?.phone && <p className="text-slate-200" dir="ltr">📞 {settings.contact.phone}</p>}
+                {settings.contact?.whatsapp && <p className="text-slate-200" dir="ltr">💬 +{settings.contact.whatsapp}</p>}
+                {settings.contact?.workingHours && <p className="text-slate-300 text-xs">🕒 {settings.contact.workingHours}</p>}
+                {settings.contact?.address && <p className="text-slate-300 text-xs">📍 {settings.contact.address}</p>}
+              </div>
             </div>
           </div>
         )}

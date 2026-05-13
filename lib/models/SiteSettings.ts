@@ -28,6 +28,14 @@ export interface ILegacyMigration {
   attempts: number
 }
 
+export interface IContactInfo {
+  email: string
+  phone: string
+  whatsapp?: string
+  address?: string
+  workingHours?: string
+}
+
 export interface ISiteSettings extends Document {
   siteName: string
   siteTagline: string
@@ -42,6 +50,7 @@ export interface ISiteSettings extends Document {
   maintenanceMode: boolean
   allowedAgeMin: number
   allowedAgeMax: number
+  contact: IContactInfo
   legacyMigration?: ILegacyMigration
   createdAt: Date
   updatedAt: Date
@@ -65,6 +74,17 @@ const AnnouncementSchema = new Schema<IAnnouncement>(
     color: { type: String, default: '#EF4444' },
     isActive: { type: Boolean, default: true },
     expiresAt: { type: Date },
+  },
+  { _id: false }
+)
+
+const ContactInfoSchema = new Schema<IContactInfo>(
+  {
+    email: { type: String, default: 'contact@baraemmajan.om' },
+    phone: { type: String, default: '+968 9000 0000' },
+    whatsapp: { type: String, default: '' },
+    address: { type: String, default: 'سلطنة عُمان' },
+    workingHours: { type: String, default: 'من الأحد إلى الخميس · 8 صباحاً - 4 مساءً' },
   },
   { _id: false }
 )
@@ -96,6 +116,7 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
     maintenanceMode: { type: Boolean, default: false },
     allowedAgeMin: { type: Number, default: 6 },
     allowedAgeMax: { type: Number, default: 12 },
+    contact: { type: ContactInfoSchema, default: () => ({}) },
     legacyMigration: { type: LegacyMigrationSchema, default: () => ({ status: 'pending', attempts: 0 }) },
   },
   { timestamps: true }
