@@ -13,6 +13,7 @@ const navItems = [
     { name: "إسلاميات", href: "/oasis", emoji: "🌙", gradient: "from-indigo-400 to-indigo-600", bg: "bg-indigo-50" },
     { name: "منوعات", href: "/variety", emoji: "🎨", gradient: "from-green-400 to-green-600", bg: "bg-green-50" },
     { name: "حصص افتراضية", href: "/classes", emoji: "💻", gradient: "from-cyan-400 to-blue-600", bg: "bg-cyan-50" },
+    { name: "اتصل بنا", href: "/contact", emoji: "📞", gradient: "from-rose-400 to-pink-600", bg: "bg-rose-50" },
 ];
 
 export function Navbar() {
